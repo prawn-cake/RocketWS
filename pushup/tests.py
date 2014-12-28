@@ -1,61 +1,56 @@
 # -*- coding: utf-8 -*-
 import unittest
-from pushup.registry import ClientsRegistry
-from websocket import create_connection
-from multiprocessing import Process
 from random import randint
-from simplemodels.models import DictEmbeddedDocument
-from simplemodels.fields import SimpleField
+
+from pushup.registry import AliasRegistry
+from geventwebsocket.handler import Client
 
 
-class Client(DictEmbeddedDocument):
-
-    """Mock client"""
-
-    address = SimpleField()
-    ws = SimpleField()
-
-
-class ClientsRegistryTestCase(unittest.TestCase):
+class AliasRegistryTestCase(unittest.TestCase):
     @classmethod
     def get_ws_client(cls, address='127.0.0.1', port=None):
         if port is None:
             port = randint(10000, 65535)
-        return Client.get_instance(
+        return Client(
             address=tuple([address, port]), ws='socket object goes here')
 
     def setUp(self):
-        self.registry = ClientsRegistry()
+        self.registry = AliasRegistry()
 
     def test_singleton(self):
-        same_registry = ClientsRegistry()
+        same_registry = AliasRegistry()
         self.assertEqual(self.registry, same_registry)
 
-    def test_register_client(self):
-        client = self.get_ws_client()
-        self.registry.register(client)
-        self.assertEqual(len(self.registry.clients), 1)
-        self.assertEqual(len(self.registry.sessions), 0, self.registry.sessions)
-
-    def test_register_client_alias(self):
+    def test_add_alias(self):
+        self.registry.flush_all()
         alias = 'john'
         client = self.get_ws_client()
-        self.registry.register_alias(alias, client)  # return an error
+        self.registry.add_alias(alias, client)
 
-        self.registry.register(client)
-        self.registry.register_alias(alias, client)
+        self.assertEqual(len(self.registry.sessions), 1)
+        registered_client = self.registry.sessions[0]
+        self.assertEqual(registered_client.address, client.address)
+        del client
+
+        # Expected NoneType reference still in sessions
+        self.assertEqual(len(self.registry.sessions), 1)
+        self.assertEqual(len(self.registry.get_clients(alias)), 0)
+
+        client = self.get_ws_client()
+        self.registry.add_alias(alias, client)
+        # Expected NoneType reference will be removed and new one will be added
         self.assertEqual(len(self.registry.sessions), 1)
 
-    def test_unregister_client(self):
+    def test_add_multiple_aliases_for_one_client(self):
+        self.registry.flush_all()
         client = self.get_ws_client()
-        self.registry.register(client)
-        self.registry.unregister(client)
-
-    def test_unregister_client_alias(self):
-        pass
-
-    def test_register_multiple_clients_from_one_ip(self):
-        pass
+        alias_1 = 'mark'
+        alias_2 = 'kim'
+        alias_3 = 'max'
+        self.registry.add_alias(alias_1, client)
+        self.registry.add_alias(alias_2, client)
+        self.registry.add_alias(alias_3, client)
+        self.assertEqual(len(self.registry.sessions), 3)
 
 
 def run_server():

@@ -2,45 +2,46 @@
 from pushup.helpers import Singleton
 from collections import defaultdict
 from itertools import chain
+import weakref
 
 
-class ClientsRegistry(object):
+class AliasRegistry(object):
 
-    """Registry for websockets clients"""
+    """Registry for websockets aliases for clients"""
 
     __metaclass__ = Singleton
 
     def __init__(self, **kwargs):
-        self.registry = dict()
-        self.registry_alias = defaultdict(list)
+        self.registry = defaultdict(list)
 
-    def register(self, client):
-        _id = client.address
-        self.registry[_id] = client
+    def add_alias(self, alias, client):
+        """Add alias for existing client.
+        Useful for
 
-    def register_alias(self, alias, client):
-        if client.address in self.registry:
-            self.registry_alias[alias].append(client)
-            tmp = {c.address: c for c in self.registry_alias[alias]}
-            tmp.update({client.address: client})
-            self.registry_alias[alias] = tmp.values()
-        else:
-            # TODO: log warning, impossible to register alias without main register entry
-            pass
+        :param alias: string alias
+        :param client: geventwebsocket.handler.Client
+        """
+        # Remove NoneType references
+        active_clients = self._get_active_clients_idx(alias)
+        active_clients.update({client.address: weakref.proxy(client)})
+        self.registry[alias] = active_clients.values()
 
-    def unregister(self, client):
-        if client.address in self.registry:
-            del self.registry[client.address]
-            # FIXME: remove alias
+    def _get_active_clients_idx(self, alias):
+        """Get active clients idx for particular alias,
+        remove NoneType references
 
-    def unregister_alias(self, alias, client):
-        if alias in self.registry_alias:
-            self.registry_alias[alias] = [
-                c for c in self.registry_alias[alias]
-                if client.address != c.address
-            ]
-            if not self.registry_alias[alias]:
-                del self.registry_alias[alias]
+        :param alias:
+        :return: dict
+        """
+        active_clients_idx = {}
+        # Remove NoneType references
+        for c in self.registry[alias]:
+            try:
+                if bool(c):
+                    active_clients_idx[c.address] = c
+            except ReferenceError:
+                continue
+        return active_clients_idx
 
     @property
     def clients(self):
@@ -48,4 +49,22 @@ class ClientsRegistry(object):
 
     @property
     def sessions(self):
-        return list(chain(*self.registry_alias.values()))
+        # TODO: rewrite method to return only active user sessions (clients)
+        return list(chain(*self.registry.values()))
+
+    def get_clients(self, alias):
+        return self._get_active_clients_idx(alias).values()
+
+    def flush(self, alias):
+        """ Remove all data for particular alias
+
+        :param alias:
+        """
+        if alias in self.registry:
+            del self.registry[alias]
+
+    def flush_all(self):
+        """Clear all elements from registry
+
+        """
+        self.registry.clear()
