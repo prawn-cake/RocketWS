@@ -4,6 +4,8 @@ from collections import defaultdict
 from itertools import chain
 import weakref
 
+# TODO: probably need to rename to ChannelRegistry
+
 
 class AliasRegistry(object):
 

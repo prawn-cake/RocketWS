@@ -82,4 +82,5 @@ server = WebSocketServer((HOST, PORT), resources, debug=DEBUG)
 registry = AliasRegistry()
 
 if __name__ == '__main__':
+    # TODO: run with pywsgi server
     server.serve_forever()
