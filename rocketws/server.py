@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
-from pushup.registry import AliasRegistry
+from rocketws.registry import AliasRegistry
 from simplemodels.models import DictEmbeddedDocument
 from simplemodels.fields import SimpleField
 import json

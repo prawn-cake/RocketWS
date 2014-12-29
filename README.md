@@ -1,7 +1,7 @@
-![PushupIcon](https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/48/rocket.png) Pushup
-=================================================================================================
+![RocketWsIcon](https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/48/rocket.png) RocketWS
+====================================================================================================
 
-Pushup is open-sourced WebSockets push server based on gevent-websocket library
+RocketWS is open-sourced WebSockets push server based on gevent-websocket library
 
 
 Features

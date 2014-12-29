@@ -2,7 +2,7 @@
 import unittest
 from random import randint
 
-from pushup.registry import AliasRegistry
+from rocketws.registry import AliasRegistry
 from geventwebsocket.handler import Client
 
 
@@ -54,7 +54,7 @@ class AliasRegistryTestCase(unittest.TestCase):
 
 
 def run_server():
-    from pushup.server import server
+    from rocketws.server import server
     server.serve_forever()
 
 
@@ -66,7 +66,7 @@ class ServerTestCase(unittest.TestCase):
         pass
 
     def test_echo(self):
-        from pushup.server import server
+        from rocketws.server import server
         server.start()
         print('test')
         # self.server.terminate()

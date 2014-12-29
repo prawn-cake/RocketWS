@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pushup.helpers import Singleton
+from rocketws.helpers import Singleton
 from collections import defaultdict
 from itertools import chain
 import weakref
