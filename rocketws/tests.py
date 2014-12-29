@@ -52,6 +52,20 @@ class AliasRegistryTestCase(unittest.TestCase):
         self.registry.add_alias(alias_3, client)
         self.assertEqual(len(self.registry.sessions), 3)
 
+    def test_add_multiple_clients_for_one_alias(self):
+        self.registry.flush_all()
+        alias = 'max'
+        client_1 = self.get_ws_client()
+        client_2 = self.get_ws_client()
+        client_3 = self.get_ws_client()
+        self.registry.add_alias(alias, client_1)
+        self.registry.add_alias(alias, client_2)
+        self.registry.add_alias(alias, client_3)
+
+        # Expect {<alias>: [client_1, client_2, client_3]} storage
+        self.assertEqual(len(self.registry.sessions), 3)
+        self.assertEqual(len(self.registry.get_clients(alias)), 3)
+
 
 def run_server():
     from rocketws.server import server

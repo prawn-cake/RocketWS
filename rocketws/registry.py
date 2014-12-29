@@ -16,13 +16,13 @@ class AliasRegistry(object):
 
     def add_alias(self, alias, client):
         """Add alias for existing client.
-        Useful for
 
         :param alias: string alias
         :param client: geventwebsocket.handler.Client
         """
         # Remove NoneType references
         active_clients = self._get_active_clients_idx(alias)
+        # Store each client as a proxy weak reference
         active_clients.update({client.address: weakref.proxy(client)})
         self.registry[alias] = active_clients.values()
 

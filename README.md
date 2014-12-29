@@ -10,5 +10,5 @@ Features
 * Free easy-use asynchronous standalone WebSockets server, allows to build cutting edge web-applications;
 * All interactions based on [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification); 
 * Client aliases support. Now you can send backend messages to UI with some user alias (nickname or primary key) instead of ip and port;
-* Multiple message sources. RabbitMQ, ZeroMQ, own HTTP API connectors is built-in, just set up it; **[in develop]**
+* Multiple message sources. RabbitMQ, ZeroMQ, own HTTP API connectors are built-in, just set up it; **[in develop]**
 * Supports command-line interface; **[in develop]**
