@@ -1,6 +1,7 @@
 gevent-websocket == 0.9.3
-simple-models == 0.2.0
+# simple-models == 0.2.0
 json-rpc == 1.8.1
+pika==0.9.14
 
 # For tests
 websocket-client==0.23.0
