@@ -135,14 +135,20 @@ class JSONRPCApiTestCase(unittest.TestCase):
         self.assertEqual(len(registry.subscribers), 1)
 
     def test_unsubscribe(self):
-        initial_subscribers = len(registry.subscribers)
+        registry.flush_all()
+        registry.subscribe('chat', self.client)
+
+        subscribers = registry.get_channel_subscribers('chat')
+        self.assertEqual(len(subscribers), 1)
+
         request = JSONRPC20Request(
             'unsubscribe',
             {'address': self.client.address, 'channel': 'chat'}
         )
         response = JSONRPCResponseManager.handle(request.json, dispatcher)
         self.assertEqual(response.data['result'], True)
-        self.assertEqual(len(registry.subscribers), initial_subscribers - 1)
+        subscribers = registry.get_channel_subscribers('chat')
+        self.assertEqual(len(subscribers), 0)
 
     def test_emit(self):
         pass

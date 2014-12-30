@@ -44,11 +44,13 @@ class SocketRegistry(object):
 
     def __unicode__(self):
         return unicode(
-            "{}(sockets={})".format(self.__class__.__name__, len(self.registry)))
+            "{}(sockets={})".format(
+                self.__class__.__name__, len(self.registry)))
 
     def __repr__(self):
         return unicode(
-            "{}(sockets={})".format(self.__class__.__name__, len(self.registry)))
+            "{}(sockets={})".format(
+                self.__class__.__name__, len(self.registry)))
 
 
 class ChannelRegistry(object):
@@ -88,7 +90,7 @@ class ChannelRegistry(object):
         return True
 
     def _get_active_subscribers_idx(self, channel):
-        """Get active clients idx for particular alias,
+        """Get active clients idx for particular channel,
         remove NoneType references
 
         :param channel:
@@ -121,7 +123,7 @@ class ChannelRegistry(object):
         return self._get_active_subscribers_idx(channel).values()
 
     def flush_channel(self, channel):
-        """ Remove all data for particular alias
+        """ Remove all data for particular channel
 
         :param channel:
         """
