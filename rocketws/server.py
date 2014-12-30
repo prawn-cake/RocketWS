@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
-from rocketws.registry import AliasRegistry
+from rocketws.registry import ChannelRegistry
 from simplemodels.models import DictEmbeddedDocument
 from simplemodels.fields import SimpleField
 import json
@@ -22,7 +22,7 @@ class EchoApplication(WebSocketApplication):
     def on_close(self, *args, **kwargs):
         print('On close: {}'.format(self.clients))
         print(self.active_client)
-        print(registry.sessions)
+        print(registry.subscribers)
         # TODO: remove alias
 
     def on_message(self, message, *args, **kwargs):
@@ -53,7 +53,7 @@ class EchoApplication(WebSocketApplication):
 
     @property
     def clients(self):
-        return self.ws.handler.server.clients
+        return self.ws.handler.server.channels
 
     @property
     def active_client(self):
@@ -67,8 +67,13 @@ class EchoApplication(WebSocketApplication):
 # JSON-RPC methods
 
 @dispatcher.add_method
-def register_alias(alias, active_client):
-    registry.add_alias(alias, active_client)
+def subscribe(channel, active_client):
+    registry.subscribe(channel, active_client)
+
+
+@dispatcher.add_method
+def unsubscribe(channel, active_client):
+    registry.unsubscribe(channel, active_client)
 
 
 resources = Resource({
@@ -79,7 +84,7 @@ DEBUG = True
 PORT = 8000
 HOST = ''
 server = WebSocketServer((HOST, PORT), resources, debug=DEBUG)
-registry = AliasRegistry()
+registry = ChannelRegistry()
 
 if __name__ == '__main__':
     # TODO: run with pywsgi server

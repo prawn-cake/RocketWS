@@ -4,10 +4,8 @@ from collections import defaultdict
 from itertools import chain
 import weakref
 
-# TODO: probably need to rename to ChannelRegistry
 
-
-class AliasRegistry(object):
+class ChannelRegistry(object):
 
     """Registry for websockets aliases for clients"""
 
@@ -16,19 +14,25 @@ class AliasRegistry(object):
     def __init__(self, **kwargs):
         self.registry = defaultdict(list)
 
-    def add_alias(self, alias, client):
-        """Add alias for existing client.
+    def subscribe(self, channel, client):
+        """Subscribe client for a channel
 
-        :param alias: string alias
+        :param channel: string channel name
         :param client: geventwebsocket.handler.Client
         """
         # Remove NoneType references
-        active_clients = self._get_active_clients_idx(alias)
+        active_subscribers = self._get_active_subscribers_idx(channel)
         # Store each client as a proxy weak reference
-        active_clients.update({client.address: weakref.proxy(client)})
-        self.registry[alias] = active_clients.values()
+        active_subscribers.update({client.address: weakref.proxy(client)})
+        self.registry[channel] = active_subscribers.values()
 
-    def _get_active_clients_idx(self, alias):
+    def unsubscribe(self, channel, client):
+        active_subscribers = self._get_active_subscribers_idx(channel)
+        if client.address in active_subscribers:
+            del active_subscribers[client.address]
+        self.registry[channel] = active_subscribers.values()
+
+    def _get_active_subscribers_idx(self, alias):
         """Get active clients idx for particular alias,
         remove NoneType references
 
@@ -46,24 +50,28 @@ class AliasRegistry(object):
         return active_clients_idx
 
     @property
-    def clients(self):
+    def channels(self):
         return self.registry.keys()
 
     @property
-    def sessions(self):
+    def subscribers(self):
+        """Return total subscribers for all channels
+
+        :return: list
+        """
         # TODO: rewrite method to return only active user sessions (clients)
         return list(chain(*self.registry.values()))
 
-    def get_clients(self, alias):
-        return self._get_active_clients_idx(alias).values()
+    def get_channel_subscribers(self, alias):
+        return self._get_active_subscribers_idx(alias).values()
 
-    def flush(self, alias):
+    def flush_channel(self, channel):
         """ Remove all data for particular alias
 
-        :param alias:
+        :param channel:
         """
-        if alias in self.registry:
-            del self.registry[alias]
+        if channel in self.registry:
+            del self.registry[channel]
 
     def flush_all(self):
         """Clear all elements from registry

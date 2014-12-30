@@ -2,11 +2,11 @@
 import unittest
 from random import randint
 
-from rocketws.registry import AliasRegistry
+from rocketws.registry import ChannelRegistry
 from geventwebsocket.handler import Client
 
 
-class AliasRegistryTestCase(unittest.TestCase):
+class ChannelRegistryTestCase(unittest.TestCase):
     @classmethod
     def get_ws_client(cls, address='127.0.0.1', port=None):
         if port is None:
@@ -15,56 +15,58 @@ class AliasRegistryTestCase(unittest.TestCase):
             address=tuple([address, port]), ws='socket object goes here')
 
     def setUp(self):
-        self.registry = AliasRegistry()
+        self.registry = ChannelRegistry()
 
     def test_singleton(self):
-        same_registry = AliasRegistry()
+        same_registry = ChannelRegistry()
         self.assertEqual(self.registry, same_registry)
 
-    def test_add_alias(self):
+    def test_subscribe(self):
         self.registry.flush_all()
-        alias = 'john'
+        channel = 'john'
         client = self.get_ws_client()
-        self.registry.add_alias(alias, client)
+        self.registry.subscribe(channel, client)
 
-        self.assertEqual(len(self.registry.sessions), 1)
-        registered_client = self.registry.sessions[0]
+        self.assertEqual(len(self.registry.subscribers), 1)
+        registered_client = self.registry.subscribers[0]
         self.assertEqual(registered_client.address, client.address)
         del client
 
         # Expected NoneType reference still in sessions
-        self.assertEqual(len(self.registry.sessions), 1)
-        self.assertEqual(len(self.registry.get_clients(alias)), 0)
+        self.assertEqual(len(self.registry.subscribers), 1)
+        self.assertEqual(
+            len(self.registry.get_channel_subscribers(channel)), 0)
 
         client = self.get_ws_client()
-        self.registry.add_alias(alias, client)
+        self.registry.subscribe(channel, client)
         # Expected NoneType reference will be removed and new one will be added
-        self.assertEqual(len(self.registry.sessions), 1)
+        self.assertEqual(len(self.registry.subscribers), 1)
 
-    def test_add_multiple_aliases_for_one_client(self):
+    def test_subscribe_on_multiple_channels(self):
         self.registry.flush_all()
         client = self.get_ws_client()
-        alias_1 = 'mark'
-        alias_2 = 'kim'
-        alias_3 = 'max'
-        self.registry.add_alias(alias_1, client)
-        self.registry.add_alias(alias_2, client)
-        self.registry.add_alias(alias_3, client)
-        self.assertEqual(len(self.registry.sessions), 3)
+        channel_1 = 'mark'
+        channel_2 = 'kim'
+        channel_3 = 'max'
+        self.registry.subscribe(channel_1, client)
+        self.registry.subscribe(channel_2, client)
+        self.registry.subscribe(channel_3, client)
+        self.assertEqual(len(self.registry.subscribers), 3)
 
-    def test_add_multiple_clients_for_one_alias(self):
+    def test_subscribe_multiple_clients_for_one_channel(self):
         self.registry.flush_all()
-        alias = 'max'
+        channel = 'chat'
         client_1 = self.get_ws_client()
         client_2 = self.get_ws_client()
         client_3 = self.get_ws_client()
-        self.registry.add_alias(alias, client_1)
-        self.registry.add_alias(alias, client_2)
-        self.registry.add_alias(alias, client_3)
+        self.registry.subscribe(channel, client_1)
+        self.registry.subscribe(channel, client_2)
+        self.registry.subscribe(channel, client_3)
 
-        # Expect {<alias>: [client_1, client_2, client_3]} storage
-        self.assertEqual(len(self.registry.sessions), 3)
-        self.assertEqual(len(self.registry.get_clients(alias)), 3)
+        # Expect {<channel>: [client_1, client_2, client_3]} storage
+        self.assertEqual(len(self.registry.subscribers), 3)
+        self.assertEqual(
+            len(self.registry.get_channel_subscribers(channel)), 3)
 
 
 def run_server():
