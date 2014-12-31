@@ -118,7 +118,7 @@ class RabbitMQMessagesSource(BaseMessagesSource):
         self.on_message_callback(body)
         self.in_process = False
 
-    def _run(self):
+    def _run(self, *args, **kwargs):
         self._connection = self.get_connection()
         self._connection.ioloop.start()
 

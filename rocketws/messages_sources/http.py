@@ -22,12 +22,13 @@ class HTTPMessagesSource(BaseMessagesSource):
         self.app = flask.Flask(self.__class__.__name__)
 
         def index_view():
+            logger.info('invoke index_view')
             on_message_callback(request.get_json(force=True))
-            return True
+            return {'a': 1}
 
         index_view.methods = ['POST']
 
-        self.app.add_url_rule('/', index_view)
+        self.app.add_url_rule('/', view_func=index_view)
 
         from gevent.pywsgi import WSGIServer
         self.server = WSGIServer(
@@ -35,13 +36,18 @@ class HTTPMessagesSource(BaseMessagesSource):
             self.app
         )
 
-    def _run(self):
+    def _run(self, *args, **kwargs):
+        logger.info('Starting server on {}'.format(self.server.address))
         self.server.start()
 
     def stop(self):
-        logger.info('Stopping')
+        logger.info('Stopping server')
         self.server.stop()
         return super(HTTPMessagesSource, self).stop()
+
+    @property
+    def started(self):
+        return self.server.started
 
 
 source = HTTPMessagesSource

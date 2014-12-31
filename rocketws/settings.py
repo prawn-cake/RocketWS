@@ -5,7 +5,7 @@ MESSAGES_SOURCE = {
     'ADAPTER': 'rabbitmq',  # Possible values: ['rabbitmq', 'http']
     'HOST': '',
     'PORT': 9999,
-    'USERNAME': '',
+    'USERNAME': 'abc',
     'PASSWORD': '',
 
     # rabbitmq specific parameters
