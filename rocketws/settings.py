@@ -6,7 +6,11 @@ MESSAGES_SOURCE = {
     'HOST': '',
     'PORT': 9999,
     'USERNAME': '',
-    'PASSWORD': ''
+    'PASSWORD': '',
+
+    # rabbitmq specific parameters
+    'MESSAGE_TTL': 3600,  # for `rabbitmq` adapter
+    'LISTEN_QUEUE': 'rocketws'
 }
 
 

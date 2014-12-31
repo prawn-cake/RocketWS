@@ -148,9 +148,9 @@ class ChannelRegistry(object):
         :param data:
         :raise ValueError:
         """
-        if not isinstance(data, dict):
+        if not isinstance(data, collections.Mapping):
             raise ValueError(
-                'emit: passed data is not a dict: {}'.format(data))
+                'emit: passed data is not a dict-like: {}'.format(data))
 
         serialized_data = json.dumps(data)
         for client in self.get_channel_subscribers(channel):
@@ -164,9 +164,9 @@ class ChannelRegistry(object):
         :param data:
         :return: :raise ValueError:
         """
-        if not isinstance(data, collections.Hashable):
+        if not isinstance(data, collections.Mapping):
             raise ValueError(
-                'notify_all: passed data is not hashable: {}'.format(data))
+                'notify_all: passed data is not dict-like: {}'.format(data))
 
         serialized_data = json.dumps(data)
         for client in self.subscribers:

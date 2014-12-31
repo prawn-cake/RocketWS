@@ -2,10 +2,12 @@
 import json
 
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
+from rocketws.exceptions import ImproperlyConfigured
 from rocketws.registry import ChannelRegistry, SocketRegistry
 from jsonrpc import JSONRPCResponseManager, dispatcher
 import settings
 import logbook
+import importlib
 
 
 logger = logbook.Logger('server')
@@ -101,12 +103,29 @@ resources = Resource({
 })
 
 
-def get_messages_source():
-    # TODO: implement __import__ method
-    # source_cls = __import__(settings.MESSAGES_SOURCE['ADAPTER'])
-    # source = source_cls(**settings.MESSAGES_SOURCE)
-    # return source
-    return None
+def get_configured_messages_source():
+    """Dynamic import for messages source
+
+    :return: BaseMessagesSource implementation instance
+    :raise ImproperlyConfigured:
+    """
+    pkg = importlib.import_module(
+        'rocketws.messages_sources.{}'.format(
+            settings.MESSAGES_SOURCE['ADAPTER']))
+    try:
+        source_cls = pkg.__dict__['source']
+    except KeyError:
+        raise ImproperlyConfigured(
+            'Wrong MESSAGES_SOURCE adapter: {}'.format(
+                settings.MESSAGES_SOURCE['ADAPTER']))
+
+    def on_message_callback(raw_message):
+        response = JSONRPCResponseManager.handle(raw_message, dispatcher)
+        return response.data
+
+    source = source_cls(on_message_callback, **settings.MESSAGES_SOURCE)
+    return source
+
 
 server = WebSocketServer(
     (settings.WEBSOCKETS['HOST'], settings.WEBSOCKETS['PORT']),
@@ -116,7 +135,7 @@ server = WebSocketServer(
 
 registry = ChannelRegistry()
 socket_registry = SocketRegistry()
-messages_source = get_messages_source()
+messages_source = get_configured_messages_source()
 
 
 if __name__ == '__main__':

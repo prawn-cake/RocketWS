@@ -29,35 +29,28 @@ class RabbitMQMessagesSource(BaseMessagesSource):
 
     """
 
-    def __init__(self, message_ttl, on_message_callback, **conn_params):
-        super(RabbitMQMessagesSource, self).__init__(**conn_params)
+    def __init__(self, on_message_callback, **conn_params):
+        super(RabbitMQMessagesSource, self).__init__(
+            on_message_callback, **conn_params)
 
-        self.listen_queue = conn_params['listen_queue']
+        self.listen_queue = conn_params['LISTEN_QUEUE']
         self.conn_params = ConnectionParameters(
-            host=conn_params['host'],
-            port=conn_params['port'],
+            host=conn_params['HOST'],
+            port=conn_params['PORT'],
             credentials=PlainCredentials(
-                conn_params['username'], conn_params['password']
+                conn_params['USERNAME'], conn_params['PASSWORD']
             ),
-            virtual_host=conn_params.get('virtual_host', '/'),
-            channel_max=conn_params.get('channel_max', 100),
-            socket_timeout=conn_params.get('socket_timeout', 1),
-            connection_attempts=conn_params.get('connection_attempts', 10),
+            virtual_host=conn_params.get('VIRTUAL_HOST', '/'),
+            channel_max=conn_params.get('CHANNEL_MAX', 100),
+            socket_timeout=conn_params.get('SOCKET_TIMEOUT', 1),
+            connection_attempts=conn_params.get('CONNECTION_ATTEMPTS', 10),
         )
         self._connection = None
         self._channel = None
         self.in_process = False
-        self.message_ttl = message_ttl
+        self.message_ttl = conn_params.get('MESSAGE_TTL', 3600)
         self._consumer_tag = None
         self._closing = False
-
-        # on_message_callback must be a function like `def x(raw_message)`
-        if not isinstance(on_message_callback, collections.Callable):
-            raise ValueError(
-                'on_message_callback must be a function like '
-                '`def x(raw_message): ...`'
-            )
-        self.on_message_callback = on_message_callback
 
     def get_connection(self):
         return SelectConnection(
@@ -164,3 +157,7 @@ class RabbitMQMessagesSource(BaseMessagesSource):
         self._closing = True
         self.stop_consuming()
         self._connection.ioloop.stop()
+
+
+source = RabbitMQMessagesSource
+__all__ = ['source']

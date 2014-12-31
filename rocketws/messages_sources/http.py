@@ -12,7 +12,9 @@ else:
 
 class HTTPMessagesSource(BaseMessagesSource):
     def __init__(self, on_message_callback, *args, **conn_params):
-        super(HTTPMessagesSource, self).__init__(*args, **conn_params)
+        super(HTTPMessagesSource, self).__init__(
+            on_message_callback, *args, **conn_params)
+
         self.app = flask.Flask(self.__class__.__name__)
 
         def index_view():
@@ -25,7 +27,7 @@ class HTTPMessagesSource(BaseMessagesSource):
 
         from gevent.pywsgi import WSGIServer
         self.server = WSGIServer(
-            (conn_params.get('host', ''), conn_params.get('port', 8003)),
+            (conn_params.get('HOST', ''), conn_params.get('PORT', 8003)),
             self.app
         )
 
@@ -34,3 +36,7 @@ class HTTPMessagesSource(BaseMessagesSource):
 
     def stop(self):
         self.server.stop()
+
+
+source = HTTPMessagesSource
+__all__ = ['source']
