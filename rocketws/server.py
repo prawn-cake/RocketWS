@@ -4,6 +4,11 @@ import json
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 from rocketws.registry import ChannelRegistry, SocketRegistry
 from jsonrpc import JSONRPCResponseManager, dispatcher
+import settings
+import logbook
+
+
+logger = logbook.Logger('server')
 
 
 class EchoApplication(WebSocketApplication):
@@ -42,7 +47,6 @@ class EchoApplication(WebSocketApplication):
         except ValueError:
             return message
         else:
-            # FIXME: self.active_client is not JSON serializable
             json_data['params']['address'] = self.active_client.address
         return json.dumps(json_data)
 
@@ -62,36 +66,67 @@ class EchoApplication(WebSocketApplication):
 
 # JSON-RPC methods
 
+jsonrpc_log = logbook.Logger('jsonrpc')
+
+
 @dispatcher.add_method
 def subscribe(channel, address):
     # TODO: add support of private channels which start with `_`,
     # `_my_private_channel` for example, pass some id and check that all
     # clients have the same id
+    jsonrpc_log.info('invoke `subscribe` command, args: {}'.format(
+        (channel, address)))
     client = socket_registry.get_client(address)
     return registry.subscribe(channel, client)
 
 
 @dispatcher.add_method
 def unsubscribe(channel, address):
+    jsonrpc_log.info('invoke `unsubscribe` command, args: {}'.format(
+        (channel, address)))
     client = socket_registry.get_client(address)
     return registry.unsubscribe(channel, client)
 
 
 @dispatcher.add_method
 def emit(channel, data):
+    jsonrpc_log.info('invoke `emit` command, args: {}'.format((channel, data)))
     return registry.emit(channel, data)
 
+
+# TODO: add implementation of multiple resources and auto-configuring it
+# TODO: implement own registry and socket registry for each WebSocketsApplication
 resources = Resource({
     '/echo': EchoApplication
 })
 
-DEBUG = True
-PORT = 8000
-HOST = ''
-server = WebSocketServer((HOST, PORT), resources, debug=DEBUG)
+
+def get_messages_source():
+    # TODO: implement __import__ method
+    # source_cls = __import__(settings.MESSAGES_SOURCE['ADAPTER'])
+    # source = source_cls(**settings.MESSAGES_SOURCE)
+    # return source
+    return None
+
+server = WebSocketServer(
+    (settings.WEBSOCKETS['HOST'], settings.WEBSOCKETS['PORT']),
+    resources,
+    debug=settings.WEBSOCKETS['DEBUG']
+)
+
 registry = ChannelRegistry()
 socket_registry = SocketRegistry()
+messages_source = get_messages_source()
+
 
 if __name__ == '__main__':
-    # TODO: run with pywsgi server
-    server.serve_forever()
+    try:
+        logger.info('Starting all services')
+        messages_source.start()
+        server.serve_forever()
+    except KeyboardInterrupt:
+        logger.info('catch KeyboardInterrupt, stop all services')
+        server.stop()
+        messages_source.stop()
+        socket_registry.flush()
+        registry.flush_all()

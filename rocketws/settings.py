@@ -2,12 +2,16 @@
 
 
 MESSAGES_SOURCE = {
-    'ADAPTER': 'rabbitmq',
+    'ADAPTER': 'rabbitmq',  # Possible values: ['rabbitmq', 'http']
     'HOST': '',
     'PORT': 9999,
     'USERNAME': '',
     'PASSWORD': ''
 }
 
-if __name__ == '__main__':
-    pass
+
+WEBSOCKETS = {
+    'HOST': '0.0.0.0',
+    'PORT': 8000,
+    'DEBUG': True
+}

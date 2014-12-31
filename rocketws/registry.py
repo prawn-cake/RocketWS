@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from rocketws.helpers import Singleton
 from collections import defaultdict
 from itertools import chain
 import weakref
 import collections
 import json
+
+from rocketws.helpers import Singleton
 
 
 class SocketRegistry(object):
@@ -62,24 +63,28 @@ class ChannelRegistry(object):
     def __init__(self, **kwargs):
         self.registry = defaultdict(list)
 
-    def subscribe(self, channel, client):
-        """Subscribe client for a channel
+    def subscribe(self, channel, *clients):
+        """Subscribe client for a channel.
+        Method supports multiple subscriptions.
 
         :param channel: string channel name
-        :param client: geventwebsocket.handler.Client
+        :param clients: geventwebsocket.handler.Client list
         """
 
         # Remove NoneType references
         active_subscribers = self._get_active_subscribers_idx(channel)
-        # Store each client as a proxy weak reference
-        active_subscribers.update({client.address: weakref.proxy(client)})
+
+        for client in clients:
+            # Store each client as a proxy weak reference
+            active_subscribers.update({client.address: weakref.proxy(client)})
         self.registry[channel] = active_subscribers.values()
         return True
 
-    def unsubscribe(self, channel, client):
+    def unsubscribe(self, channel, *clients):
         active_subscribers = self._get_active_subscribers_idx(channel)
-        if client.address in active_subscribers:
-            del active_subscribers[client.address]
+        for client in clients:
+            if client.address in active_subscribers:
+                del active_subscribers[client.address]
 
         # Remove channel from registry if there are no subscribers
         if not active_subscribers:
@@ -143,9 +148,9 @@ class ChannelRegistry(object):
         :param data:
         :raise ValueError:
         """
-        if not isinstance(data, collections.Hashable):
+        if not isinstance(data, dict):
             raise ValueError(
-                'emit: passed data is not hashable: {}'.format(data))
+                'emit: passed data is not a dict: {}'.format(data))
 
         serialized_data = json.dumps(data)
         for client in self.get_channel_subscribers(channel):

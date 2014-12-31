@@ -7,13 +7,15 @@ from rocketws.registry import ChannelRegistry, SocketRegistry
 from geventwebsocket.handler import Client
 from jsonrpc import JSONRPCResponseManager
 from rocketws.server import dispatcher, registry
+import mock
 
 
 def get_ws_client(address='127.0.0.1', port=None):
     if port is None:
         port = randint(10000, 65535)
-    return Client(
-        address=tuple([address, port]), ws='socket object goes here')
+    client = Client(address=tuple([address, port]), ws=mock.MagicMock())
+    client.ws.send = mock.MagicMock(return_value=True)
+    return client
 
 
 class ChannelRegistryTestCase(unittest.TestCase):
@@ -98,25 +100,6 @@ class SocketRegistryTestCase(unittest.TestCase):
         self.assertEqual(client, _client)
 
 
-def run_server():
-    from rocketws.server import server
-    server.serve_forever()
-
-
-class ServerTestCase(unittest.TestCase):
-    def setUp(self):
-        # self.server = Process(target=run_server)
-        # self.server.start()
-        # self.client = create_connection('ws://0.0.0.0:8000')
-        pass
-
-    def test_echo(self):
-        from rocketws.server import server
-        server.start()
-        print('test')
-        # self.server.terminate()
-
-
 class JSONRPCApiTestCase(unittest.TestCase):
     def setUp(self):
         self.client = get_ws_client()
@@ -151,4 +134,22 @@ class JSONRPCApiTestCase(unittest.TestCase):
         self.assertEqual(len(subscribers), 0)
 
     def test_emit(self):
-        pass
+        registry.flush_all()
+        client_1 = get_ws_client()
+        client_2 = get_ws_client()
+        client_3 = get_ws_client()
+
+        registry.subscribe('chat', client_1, client_2, client_3)
+        self.assertEqual(len(registry.channels), 1)
+        self.assertEqual(len(registry.subscribers), 3)
+
+        request = JSONRPC20Request(
+            'emit',
+            {'data': {'message': 'test'}, 'channel': 'chat'}
+        )
+        response = JSONRPCResponseManager.handle(request.json, dispatcher)
+        self.assertEqual(response.data['result'], True)
+
+        for client in client_1, client_2, client_3:
+            # mock for send method is injected in get_ws_client
+            client.ws.send.assert_called_once_with('{"message": "test"}')

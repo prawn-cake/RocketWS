@@ -2,6 +2,8 @@
 """
 Async rmq abstract manager
 https://pika.readthedocs.org/en/latest/examples/asynchronous_consumer_example.html # noqa
+
+NOTE: pika doesn't support python3
 """
 
 try:
@@ -122,7 +124,7 @@ class RabbitMQMessagesSource(BaseMessagesSource):
         self.on_message_callback(body)
         self.in_process = False
 
-    def run(self):
+    def _run(self):
         self._connection = self.get_connection()
         self._connection.ioloop.start()
 
