@@ -8,6 +8,10 @@ except ImportError as err:
     raise ImproperlyConfigured('Error loading flask module: {}'.format(err))
 else:
     from flask import request
+import logbook
+
+
+logger = logbook.Logger('ms:http')
 
 
 class HTTPMessagesSource(BaseMessagesSource):
@@ -35,7 +39,9 @@ class HTTPMessagesSource(BaseMessagesSource):
         self.server.start()
 
     def stop(self):
+        logger.info('Stopping')
         self.server.stop()
+        return super(HTTPMessagesSource, self).stop()
 
 
 source = HTTPMessagesSource

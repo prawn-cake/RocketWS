@@ -103,7 +103,7 @@ resources = Resource({
 })
 
 
-def get_configured_messages_source():
+def get_configured_messages_source(name=None):
     """Dynamic import for messages source
 
     :return: BaseMessagesSource implementation instance
@@ -111,7 +111,7 @@ def get_configured_messages_source():
     """
     pkg = importlib.import_module(
         'rocketws.messages_sources.{}'.format(
-            settings.MESSAGES_SOURCE['ADAPTER']))
+            name or settings.MESSAGES_SOURCE['ADAPTER']))
     try:
         source_cls = pkg.__dict__['source']
     except KeyError:

@@ -14,14 +14,15 @@ else:
     from pika import PlainCredentials, ConnectionParameters, SelectConnection
 
 import gevent
-import collections
 from rocketws.exceptions import ImproperlyConfigured
 from rocketws.messages_sources.base import BaseMessagesSource
+import logbook
 
 
 pika.adapters.select_connection.SELECT_TYPE = 'epoll'
 # pika_logger = get_logger(name='pika', log_level='INFO')
-logger = None
+
+logger = logbook.Logger('ms:rabbitmq')
 
 
 class RabbitMQMessagesSource(BaseMessagesSource):
@@ -156,7 +157,9 @@ class RabbitMQMessagesSource(BaseMessagesSource):
         logger.info('Stopping')
         self._closing = True
         self.stop_consuming()
-        self._connection.ioloop.stop()
+        if self._connection:
+            self._connection.ioloop.stop()
+        return super(RabbitMQMessagesSource, self).stop()
 
 
 source = RabbitMQMessagesSource

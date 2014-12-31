@@ -34,3 +34,6 @@ class BaseMessagesSource(Greenlet):
         raise NotImplementedError(
             '{} is not implemented `_run` method'.format(
                 self.__class__.__name__))
+
+    def stop(self):
+        self.kill()
