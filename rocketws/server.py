@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 from rocketws.exceptions import ImproperlyConfigured
 from rocketws.registry import ChannelRegistry, SocketRegistry

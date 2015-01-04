@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from gevent import monkey
+monkey.patch_all()
+
 import unittest
 
 from rocketws.server import get_configured_messages_source
@@ -29,7 +32,7 @@ class HttpMessagesSourceTestCase(unittest.TestCase):
 
         url = 'http://localhost:{}/'.format(source.server.server_port)
         response = requests.post(url, json=dict(a=1))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.content)
 
         source.stop()
         self.assertFalse(source.started)
@@ -43,7 +46,7 @@ class RabbitMQMessagesSourceTestCase(unittest.TestCase):
         source = get_configured_messages_source(self.source_name)
         self.assertIsInstance(source, RabbitMQMessagesSource)
 
-    @unittest.skip('source is not completely implemented')
+    # @unittest.skip('source is not completely implemented')
     def test_start_stop(self):
         source = get_configured_messages_source(self.source_name)
         source.start()

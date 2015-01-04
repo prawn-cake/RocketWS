@@ -15,7 +15,7 @@ else:
 
 import gevent
 from rocketws.exceptions import ImproperlyConfigured
-from rocketws.messages_sources.base import BaseMessagesSource
+from rocketws.messages_sources.base import BaseMessagesSourceAsync
 import logbook
 
 
@@ -25,7 +25,7 @@ pika.adapters.select_connection.SELECT_TYPE = 'epoll'
 logger = logbook.Logger('ms:rabbitmq')
 
 
-class RabbitMQMessagesSource(BaseMessagesSource):
+class RabbitMQMessagesSource(BaseMessagesSourceAsync):
     """RabbitMQ message source
 
     """
