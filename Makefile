@@ -9,7 +9,7 @@ help:
 	@grep -e "^# target:" [Mm]akefile | sed -e 's/^# target: //g'
 
 .PHONY: run
-run: $(ENV)
+run: env
 # target: run - run server in console mode
 	@$(PYTHON) $(CURDIR)/rocketws/server.py
 
@@ -20,6 +20,6 @@ env:
 	@$(ENV_DIR)/bin/pip install -r $(CURDIR)/requirements.txt
 
 .PHONY: test
-test:
+test: env
 # target: test - Run tests
 	@$(PYTHON) -m unittest -v rocketws.tests
