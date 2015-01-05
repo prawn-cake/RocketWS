@@ -16,9 +16,7 @@ Features
 
 Workflow
 ---------
-```uml-activity "RocketWS workflow"
-Your backend | MessagesSource (RabbitMQ, HTTP method) | RocketWS | Web browser
-```
+
 
 Interactions
 ------------
@@ -33,10 +31,10 @@ Request examples
 All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification)
 
 * WebSockets
-    * **Subscribe** to channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "subscribe", "params": {"channel": "chat"}}```
-    * **Unsubscribe** from channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "unsubscribe", "params": {"channel": "chat"}}```
+  * **Subscribe** to channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "subscribe", "params": {"channel": "chat"}}```
+  * **Unsubscribe** from channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "unsubscribe", "params": {"channel": "chat"}}```
     
 
 * MessagesSources
-    * **Emit** message for all subscribers for channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}```
+  * **Emit** message for all subscribers for channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}```
 
