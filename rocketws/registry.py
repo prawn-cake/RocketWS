@@ -19,6 +19,7 @@ class SocketRegistry(object):
 
     def __init__(self):
         self.registry = dict()
+        logger.debug('Init SocketRegistry')
 
     def register(self, client):
         self.registry[client.address] = weakref.ref(client)
@@ -45,6 +46,7 @@ class SocketRegistry(object):
 
     def flush(self):
         self.registry.clear()
+        logger.debug('Flush for SocketRegistry')
 
     def __unicode__(self):
         return unicode(
@@ -65,6 +67,7 @@ class ChannelRegistry(object):
 
     def __init__(self, **kwargs):
         self.registry = defaultdict(list)
+        logger.debug('Init ChannelRegistry')
 
     def subscribe(self, channel, *clients):
         """Subscribe client for a channel.
@@ -143,6 +146,7 @@ class ChannelRegistry(object):
 
         """
         self.registry.clear()
+        logger.debug('Flush all for ChannelRegistry')
 
     def emit(self, channel, data):
         """Emit json message for all channel clients

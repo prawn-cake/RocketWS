@@ -109,18 +109,19 @@ def get_configured_messages_source(name=None):
     return source
 
 
+# TODO: add daemonization (supervisor or gunicorn or as a linux daemon)
 if __name__ == '__main__':
+    logger.info('Starting all services')
     server = WebSocketServer(
         (settings.WEBSOCKETS['HOST'], settings.WEBSOCKETS['PORT']),
         resources,
         debug=settings.WEBSOCKETS['DEBUG']
     )
-
+    server.environ['SERVER_SOFTWARE'] = ''
     messages_source = get_configured_messages_source()
-
     try:
-        logger.info('Starting all services')
         messages_source.start()
+        logger.info('Starting WebSocketServer on: {}'.format(server.address))
         server.serve_forever()
     except KeyboardInterrupt:
         logger.info('catch KeyboardInterrupt, stop all services')

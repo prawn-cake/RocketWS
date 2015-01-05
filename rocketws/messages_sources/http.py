@@ -37,11 +37,15 @@ class HTTPMessagesSource(BaseMessagesSource):
         )
 
     def start(self):
+        logger.debug(
+            'Starting HTTP messages source on: {}'.format(self.server.address))
         self.server.start()
+        logger.debug('Done')
 
     def stop(self):
-        logger.info('Stopping server')
+        logger.info('Stopping HTTP messages source')
         self.server.stop()
+        logger.debug('Done')
 
     @property
     def started(self):

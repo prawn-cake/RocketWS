@@ -1,26 +1,25 @@
-ENV=$(CURDIR)/.env
-PYTHON=$(ENV)/bin/python
+# System variables
+ENV_DIR=$(CURDIR)/.env
+PYTHON=$(ENV_DIR)/bin/python
 
-all: $(ENV)
+PROJECT=rocketws
 
-.PHONY: help
-# target: help - Display callable targets
 help:
-	@egrep "^# target:" [Mm]akefile
+# target: help - Display callable targets
+	@grep -e "^# target:" [Mm]akefile | sed -e 's/^# target: //g'
 
+.PHONY: run
+run: $(ENV)
+# target: run - run server in console mode
+	@$(PYTHON) $(CURDIR)/rocketws/server.py
+
+.PHONY: env
+env:
+# target: env - create virtualenv and install packages
+	@virtualenv $(ENV_DIR)
+	@$(ENV_DIR)/bin/pip install -r $(CURDIR)/requirements.txt
 
 .PHONY: test
-# target: test - Run tests
 test:
-	@$(PYTHON) -m unittest discover
-
-
-.PHONY: test_ci
-# target: test_ci - Run tests command adapt for CI systems
-test_ci:
-	@python -m unittest discover
-
-
-$(ENV): requirements.txt
-	virtualenv --no-site-packages $(ENV)
-	$(ENV)/bin/pip install -r requirements.txt
+# target: test - Run tests
+	@$(PYTHON) -m unittest -v rocketws.tests

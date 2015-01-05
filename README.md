@@ -11,6 +11,7 @@ Features
 * All interactions are based on [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification); 
 * Unlimited subscribe channels;
 * Multiple message sources. RabbitMQ, ZeroMQ, own HTTP API connectors are built-in, just set up it; **[in develop]**
+* Scalable software design;
 * Supports command-line interface; **[in develop]**
 
 

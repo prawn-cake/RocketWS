@@ -9,8 +9,8 @@ MESSAGES_SOURCE = {
     'PASSWORD': '',
 
     # rabbitmq specific parameters
-    'MESSAGE_TTL': 3600,  # for `rabbitmq` adapter
-    'LISTEN_QUEUE': 'rocketws'
+    'MESSAGE_TTL': 3600,  # for `rabbitmq` adapter, https://www.rabbitmq.com/ttl.html
+    'LISTEN_QUEUE': 'rocketws'  # will be auto-declared if not
 }
 
 
