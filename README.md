@@ -16,6 +16,7 @@ Features
 
 Workflow
 ---------
+![RocketWSWorkflow](https://www.dropbox.com/s/nz4krowb760tpho/rocketws_workflow.png?)
 
 
 Interactions
@@ -31,8 +32,11 @@ Request examples
 All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification)
 
 * WebSockets
-  * **Subscribe** to channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "subscribe", "params": {"channel": "chat"}}```
-  * **Unsubscribe** from channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "unsubscribe", "params": {"channel": "chat"}}```
+  * **Subscribe** to channel `chat`:
+  ```{"id": 0, "jsonrpc": "2.0", "method": "subscribe", "params": {"channel": "chat"}}```
+  
+  * **Unsubscribe** from channel `chat`:
+  ```{"id": 0, "jsonrpc": "2.0", "method": "unsubscribe", "params": {"channel": "chat"}}```
     
 
 * MessagesSources
