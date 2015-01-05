@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from gevent import monkey
-monkey.patch_all()
-
 import unittest
 
 from rocketws.server import get_configured_messages_source
@@ -30,9 +27,17 @@ class HttpMessagesSourceTestCase(unittest.TestCase):
         source.start()
         self.assertTrue(source.started)
 
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 0,
+            "method": "emit",
+            "params": {"channel": "chat", "data": {"message": "hello world"}}
+        }
+
         url = 'http://localhost:{}/'.format(source.server.server_port)
-        response = requests.post(url, json=dict(a=1))
+        response = requests.post(url, json=payload)
         self.assertEqual(response.status_code, 200, response.content)
+        self.assertIn("'result': True", response.content)
 
         source.stop()
         self.assertFalse(source.started)
@@ -46,7 +51,6 @@ class RabbitMQMessagesSourceTestCase(unittest.TestCase):
         source = get_configured_messages_source(self.source_name)
         self.assertIsInstance(source, RabbitMQMessagesSource)
 
-    # @unittest.skip('source is not completely implemented')
     def test_start_stop(self):
         source = get_configured_messages_source(self.source_name)
         source.start()

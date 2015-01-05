@@ -6,7 +6,7 @@ from jsonrpc.jsonrpc2 import JSONRPC20Request
 from rocketws.registry import ChannelRegistry, SocketRegistry
 from geventwebsocket.handler import Client
 from jsonrpc import JSONRPCResponseManager
-from rocketws.server import dispatcher, registry
+from rocketws.rpc import ui_dispatcher, ms_dispatcher, registry
 import mock
 
 
@@ -111,7 +111,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
             'subscribe',
             {'address': self.client.address, 'channel': 'chat'}
         )
-        response = JSONRPCResponseManager.handle(request.json, dispatcher)
+        response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
         self.assertEqual(response.data['result'], True)
 
         self.assertEqual(len(registry.channels), 1)
@@ -128,7 +128,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
             'unsubscribe',
             {'address': self.client.address, 'channel': 'chat'}
         )
-        response = JSONRPCResponseManager.handle(request.json, dispatcher)
+        response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
         self.assertEqual(response.data['result'], True)
         subscribers = registry.get_channel_subscribers('chat')
         self.assertEqual(len(subscribers), 0)
@@ -147,7 +147,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
             'emit',
             {'data': {'message': 'test'}, 'channel': 'chat'}
         )
-        response = JSONRPCResponseManager.handle(request.json, dispatcher)
+        response = JSONRPCResponseManager.handle(request.json, ms_dispatcher)
         self.assertEqual(response.data['result'], True)
 
         for client in client_1, client_2, client_3:

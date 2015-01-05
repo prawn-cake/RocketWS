@@ -6,6 +6,9 @@ import collections
 import json
 
 from rocketws.helpers import Singleton
+import logbook
+
+logger = logbook.Logger('registry')
 
 
 class SocketRegistry(object):
@@ -148,14 +151,20 @@ class ChannelRegistry(object):
         :param data:
         :raise ValueError:
         """
+        logger.debug('Emit data `{}` for channel `{}`'.format(data, channel))
         if not isinstance(data, collections.Mapping):
             raise ValueError(
                 'emit: passed data is not a dict-like: {}'.format(data))
 
         serialized_data = json.dumps(data)
-        for client in self.get_channel_subscribers(channel):
+        subscribers = self.get_channel_subscribers(channel)
+
+        logger.debug(
+            'Channel contains {} subscribers'.format(len(subscribers)))
+        for client in subscribers:
             client.ws.send(serialized_data)
 
+        logger.debug('Emit:ok')
         return True
 
     def notify_all(self, data):

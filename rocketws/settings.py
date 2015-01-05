@@ -2,7 +2,7 @@
 
 
 MESSAGES_SOURCE = {
-    'ADAPTER': 'rabbitmq',  # Possible values: ['rabbitmq', 'http']
+    'ADAPTER': 'http',  # Possible values: ['rabbitmq', 'http']
     'HOST': '',
     'PORT': 9999,
     'USERNAME': 'abc',
