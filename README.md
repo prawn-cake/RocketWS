@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/prawn-cake/RocketWS.png?label=ready&title=Ready)](https://waffle.io/prawn-cake/RocketWS)
 ![RocketWsIcon](https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/48/rocket.png) RocketWS
 ====================================================================================================
 [![Build Status](https://travis-ci.org/prawn-cake/RocketWS.svg)](https://travis-ci.org/prawn-cake/RocketWS)
