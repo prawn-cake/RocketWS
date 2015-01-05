@@ -16,7 +16,7 @@ Features
 
 Workflow
 ---------
-![RocketWSWorkflow](https://www.dropbox.com/s/nz4krowb760tpho/rocketws_workflow.png?)
+![RocketWSWorkflow](https://www.dropbox.com/s/nz4krowb760tpho/rocketws_workflow.png?dl=1)
 
 
 Interactions
