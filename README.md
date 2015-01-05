@@ -12,3 +12,12 @@ Features
 * Unlimited subscribe channels;
 * Multiple message sources. RabbitMQ, ZeroMQ, own HTTP API connectors are built-in, just set up it; **[in develop]**
 * Supports command-line interface; **[in develop]**
+
+
+Interactions
+-----------
+Two main types of server interactions are supported:
+
+* WebSockets - is used by browser-like clients;
+* MessagesSources - is used by backend applications;
+
