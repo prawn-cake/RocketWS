@@ -40,6 +40,9 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
   
   * **Unsubscribe** from channel `chat`:
   ```{"id": 0, "jsonrpc": "2.0", "method": "unsubscribe", "params": {"channel": "chat"}}```
+  
+  * **Send data** to channel `chat`:
+  ```{"id": 0, "jsonrpc": "2.0", "method": "send_data", "params": {"channel": "chat", "data": {"message": "hola!"}}}```
     
 
 * MessagesSources
