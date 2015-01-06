@@ -20,3 +20,5 @@ ui/node_modules
 .env
 *.sqlite3
 *.DS_Store
+MANIFEST
+dist/*

@@ -49,9 +49,10 @@ def send_data(channel, data, address):
         (channel, address)))
     client = socket_registry.get_client(address)
     if not registry.is_client_in_channel(client, channel):
-        raise RPCMethodError(
-            'Client `{}` is not a subscriber of channel `{}`'.format(
-                address, channel))
+        msg = 'Client `{}` is not a subscriber of channel `{}`'.format(
+            address, channel)
+        logger.error('Error: {}; Data: {}'.format(msg, data))
+        raise RPCMethodError(msg)
 
     # FIXME: think about whether we need to omit send message for sender or not
     # return registry.emit(channel, data, ignore_clients=(client.address, ))
