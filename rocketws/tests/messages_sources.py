@@ -22,7 +22,7 @@ class HttpMessagesSourceTestCase(unittest.TestCase):
         source.stop()
         self.assertFalse(source.started)
 
-    def test_send_message(self):
+    def test_emit(self):
         source = get_configured_messages_source(self.source_name)
         source.start()
         self.assertTrue(source.started)

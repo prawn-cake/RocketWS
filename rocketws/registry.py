@@ -21,8 +21,9 @@ class SocketRegistry(object):
         self.registry = dict()
         logger.debug('Init SocketRegistry')
 
-    def register(self, client):
-        self.registry[client.address] = weakref.ref(client)
+    def register(self, *clients):
+        for client in clients:
+            self.registry[client.address] = weakref.ref(client)
 
     def unregister(self, client):
         if client.address in self.registry:
@@ -133,6 +134,20 @@ class ChannelRegistry(object):
     def get_channel_subscribers(self, channel):
         return self._get_active_subscribers_idx(channel).values()
 
+    def is_client_in_channel(self, client, channel):
+        """Check whether client in particular channel or not.
+         NOTE: registry stores proxy object that's why simple
+         `client in self.registry.get(channel)` doesn't work
+
+        :param client:
+        :param channel:
+        :return:
+        """
+        return client.address in [
+            proxy_client.address
+            for proxy_client in self.registry.get(channel, [])
+        ]
+
     def flush_channel(self, channel):
         """ Remove all data for particular channel
 
@@ -148,14 +163,19 @@ class ChannelRegistry(object):
         self.registry.clear()
         logger.debug('Flush all for ChannelRegistry')
 
-    def emit(self, channel, data):
+    def emit(self, channel, data, ignore_clients=()):
         """Emit json message for all channel clients
 
         :param channel: channel name
         :param data:
+        :param ignore_clients: ignore clients addresses to emit data
+               Example: (('127.0.0.1', 5555), )
+
         :raise ValueError:
         """
-        logger.debug('Emit data `{}` for channel `{}`'.format(data, channel))
+        logger.debug(
+            'Emit data `{}` for channel `{}` (ignore: {})'.format(
+                data, channel, ignore_clients))
         if not isinstance(data, collections.Mapping):
             raise ValueError(
                 'emit: passed data is not a dict-like: {}'.format(data))
@@ -166,7 +186,8 @@ class ChannelRegistry(object):
         logger.debug(
             'Channel contains {} subscribers'.format(len(subscribers)))
         for client in subscribers:
-            client.ws.send(serialized_data)
+            if client.address not in ignore_clients:
+                client.ws.send(serialized_data)
 
         logger.debug('Emit:ok')
         return True
@@ -181,9 +202,11 @@ class ChannelRegistry(object):
             raise ValueError(
                 'notify_all: passed data is not dict-like: {}'.format(data))
 
+        logger.debug('Notify all with data {}'.format(data))
         serialized_data = json.dumps(data)
         for client in self.subscribers:
             client.ws.send(serialized_data)
+        logger.debug('Notify all:ok')
 
         return True
 

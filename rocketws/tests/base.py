@@ -134,6 +134,8 @@ class JSONRPCApiTestCase(unittest.TestCase):
         self.assertEqual(len(subscribers), 0)
 
     def test_emit(self):
+        """Test for backend emit command
+        """
         registry.flush_all()
         client_1 = get_ws_client()
         client_2 = get_ws_client()
@@ -153,3 +155,51 @@ class JSONRPCApiTestCase(unittest.TestCase):
         for client in client_1, client_2, client_3:
             # mock for send method is injected in get_ws_client
             client.ws.send.assert_called_once_with('{"message": "test"}')
+
+    def test_send_data(self):
+        """Test ui send_data.
+
+        """
+        registry.flush_all()
+        client_1 = get_ws_client()
+        client_2 = get_ws_client()
+
+        # Emulate WebSocketApplication server registration
+        self.socket_registry.register(client_1, client_2)
+
+        registry.subscribe('chat', client_1, client_2)
+
+        # Assume that client1 send message to chat and receive
+        request = JSONRPC20Request(
+            'send_data',
+            {
+                'data': {'message': 'test'},
+                'channel': 'chat',
+                'address': client_1.address
+            }
+        )
+        response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
+        self.assertEqual(response.data['result'], True)
+
+        for client in client_1, client_2:
+            # mock for send method is injected in get_ws_client
+            client.ws.send.assert_called_once_with('{"message": "test"}')
+
+        # Not subscribed client3 send message to `chat`, expected an error
+        client_3 = get_ws_client()
+
+        # Emulate WebSocketApplication server registration
+        self.socket_registry.register(client_3)
+
+        request = JSONRPC20Request(
+            'send_data',
+            {
+                'data': {'message': 'test'},
+                'channel': 'chat',
+                'address': client_3.address
+            }
+        )
+        response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
+        self.assertTrue(response.data['error'])
+        self.assertIn('is not a subscriber of channel `chat`', response.json)
+        self.assertFalse(client_3.ws.send.called)

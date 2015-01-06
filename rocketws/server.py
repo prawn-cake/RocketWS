@@ -24,7 +24,7 @@ from rocketws.rpc import (
 logger = logbook.Logger('server')
 
 
-class EchoApplication(WebSocketApplication):
+class MainApplication(WebSocketApplication):
     # NOTE: access to all clients self.ws.handler.server.clients.values()
 
     def on_open(self, *args, **kwargs):
@@ -47,7 +47,9 @@ class EchoApplication(WebSocketApplication):
         message = self._inject_client_address(message)
         response = JSONRPCResponseManager.handle(message, ui_dispatcher)
         logger.debug('subscribers: {}'.format(registry.subscribers))
-        return response.data
+
+        # Send response to the client
+        self.active_client.ws.send(response.json)
 
     def _inject_client_address(self, message):
         """Inject active_client for jsonrpc handler
@@ -76,10 +78,11 @@ class EchoApplication(WebSocketApplication):
         return self.ws.handler.active_client
 
 
-# TODO: add implementation of multiple resources and auto-configuring it
-# TODO: implement own registry and socket registry for each WebSocketsApplication
+# TODO: think about implementation of multiple resources and auto-configuring it
+# --> implement own registry and socket registry for each WebSocketsApplication
+
 resources = Resource({
-    '/echo': EchoApplication
+    settings.WEBSOCKETS['LOCATION']: MainApplication
 })
 
 
