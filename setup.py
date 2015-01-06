@@ -8,5 +8,5 @@ setup(
     license='MIT',
     author='prawn-cake',
     author_email='ekimovsky.maksim@gmail.com',
-    description='Open-sourced WebSockets push server'
+    description='RocketWS is open-sourced WebSockets push server based on gevent-websocket library'
 )
