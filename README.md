@@ -2,6 +2,7 @@
 ====================================================================================================
 [![Stories in Ready](https://badge.waffle.io/prawn-cake/RocketWS.png?label=ready&title=Ready)](https://waffle.io/prawn-cake/RocketWS)
 [![Build Status](https://travis-ci.org/prawn-cake/RocketWS.svg)](https://travis-ci.org/prawn-cake/RocketWS)
+[![Coverage Status](https://img.shields.io/coveralls/prawn-cake/RocketWS.svg)](https://coveralls.io/r/prawn-cake/RocketWS)
 
 RocketWS is open-sourced WebSockets push server based on gevent-websocket library
 
@@ -47,4 +48,8 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
 
 * MessagesSources
   * **Emit** message for all subscribers for channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}```
+  * **Notify all** subscribers (some system messages): ```{"id": 0, "jsonrpc": "2.0", "method": "notify_all", "params": {"data": {"message": "Broadcase system message"}}}```
 
+
+Installation
+------------
