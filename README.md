@@ -67,11 +67,13 @@ Installation/Deployment
 
 * Setup virtualenv: ```cd <dir:RocketWS> && make env```
 
+* Check settings at: ```<dir:RocketWS>/rocketws/settings.py```
+
 * Run it: ```make run```
 
 ### Supervisor way
 
-* Get source code and setup virtualenv as described above
+* Get source code, setup virtualenv and check settings as described above
 
 * Install supervisor: ```sudo aptitude install supervisor  # Debian-way```
 
