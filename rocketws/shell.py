@@ -63,6 +63,11 @@ class RocketWSShell(cmd.Cmd):
         else:
             print(get_subscribers(channel))
 
+    def do_available_channels(self, line):
+        """Get available channels
+        """
+        print(get_available_channels())
+
     def do_exit(self, line):
         print('Bye!')
         return True
@@ -160,6 +165,23 @@ def get_subscribers(channel=None):
         logger.info('get_subscribers:ok {}'.format(response.status_code))
         return response.content
 
+
+def get_available_channels():
+    payload = {
+        "jsonrpc": "2.0",
+        "id": 0,
+        "method": "available_channels",
+        "params": {}
+    }
+    try:
+        response = requests.post(CONNECT_URL, json=payload)
+    except requests.exceptions.ConnectionError as err:
+        msg = 'Connection error to `{}`, ' \
+              'check RocketWS is running'.format(CONNECT_URL)
+        logger.error(err)
+        print(msg)
+    else:
+        return response.content
 
 if __name__ == '__main__':
     RocketWSShell().cmdloop()

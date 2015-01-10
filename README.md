@@ -15,7 +15,7 @@ Features
 * Unlimited subscribe channels;
 * Can support multiple message sources, default is HTTP;
 * Scalable software design;
-* Supports command-line interface; **[in develop]**
+* Supports command-line interface;
 
 
 Workflow
@@ -29,7 +29,7 @@ Two main types of server interactions are supported:
 
 * WebSockets - is used by browser-like clients;
 * MessagesSources - is used by backend applications;
-
+* Command line interface - useful for testing;
 
 Request examples
 ----------------
@@ -49,6 +49,13 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
 * MessagesSources
   * **Emit** message for all subscribers for channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}```
   * **Notify all** subscribers (some system messages): ```{"id": 0, "jsonrpc": "2.0", "method": "notify_all", "params": {"data": {"message": "Broadcase system message"}}}```
+
+
+Command line interface
+-----------------------
+
+* Run shell: ```make shell```
+* Type ```help``` for more information
 
 
 Installation/Deployment

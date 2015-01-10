@@ -93,3 +93,9 @@ def get_subscribers(channel=None):
     else:
         clients = registry.get_channel_subscribers(channel)
     return [c.address for c in clients]
+
+
+@ms_dispatcher.add_method
+def available_channels():
+    logger_ms.info('invoke `available_channels` command')
+    return registry.channels
