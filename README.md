@@ -51,5 +51,24 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
   * **Notify all** subscribers (some system messages): ```{"id": 0, "jsonrpc": "2.0", "method": "notify_all", "params": {"data": {"message": "Broadcase system message"}}}```
 
 
-Installation
-------------
+Installation/Deployment
+------------------------
+
+### Supervisor way
+
+1. Get source code: ```git clone https://github.com/prawn-cake/RocketWS.git <dir:RocketWS>```
+
+2. Setup virtualenv: ```cd <dir:RocketWS> && make env```
+
+3. Install supervisor: ```sudo aptitude install supervisor  # Debian-way```
+
+3. Add supervisor config: ```sudo vim /etc/supervisor/conf.d/rocketws.conf```
+
+```
+[program:rocketws]
+command=<dir:RocketWS>/.env/bin/python <dir:RocketWS>/rocketws/server.py
+autostart=false
+autorestart=true
+user=<str:user>
+stdout_logfile=<dir:logdir>/rocketws.log
+```
