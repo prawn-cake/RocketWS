@@ -201,5 +201,6 @@ class JSONRPCApiTestCase(unittest.TestCase):
         )
         response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
         self.assertTrue(response.data['error'])
-        self.assertIn('is not a subscriber of channel `chat`', response.json)
+        self.assertIn(
+            'is not a subscriber of the channel `chat`', str(response.json))
         self.assertFalse(client_3.ws.send.called)

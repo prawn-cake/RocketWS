@@ -13,7 +13,7 @@ Features
 * Free easy-use asynchronous standalone WebSockets server, allows to build cutting edge web-applications;
 * All interactions are based on [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification); 
 * Unlimited subscribe channels;
-* Multiple message sources. RabbitMQ, ZeroMQ, own HTTP API connectors are built-in, just set up it; **[in develop]**
+* Can support multiple message sources, default is HTTP;
 * Scalable software design;
 * Supports command-line interface; **[in develop]**
 
@@ -56,13 +56,13 @@ Installation/Deployment
 
 ### Supervisor way
 
-1. Get source code: ```git clone https://github.com/prawn-cake/RocketWS.git <dir:RocketWS>```
+* Get source code: ```git clone https://github.com/prawn-cake/RocketWS.git <dir:RocketWS>```
 
-2. Setup virtualenv: ```cd <dir:RocketWS> && make env```
+* Setup virtualenv: ```cd <dir:RocketWS> && make env```
 
-3. Install supervisor: ```sudo aptitude install supervisor  # Debian-way```
+* Install supervisor: ```sudo aptitude install supervisor  # Debian-way```
 
-3. Add supervisor config: ```sudo vim /etc/supervisor/conf.d/rocketws.conf```
+* Add supervisor config: ```sudo vim /etc/supervisor/conf.d/rocketws.conf```
 
 ```
 [program:rocketws]
@@ -72,3 +72,11 @@ autorestart=true
 user=<str:user>
 stdout_logfile=<dir:logdir>/rocketws.log
 ```
+
+* Update supervisor configurations: ```sudo supervisorctl reread && sudo supervisorctl update```
+
+* Start RocketWS with: ```sudo supervisorctl start rocketws```
+
+
+### Docker way
+In progress
