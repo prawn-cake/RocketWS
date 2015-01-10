@@ -37,7 +37,7 @@ class HttpMessagesSourceTestCase(unittest.TestCase):
         url = 'http://localhost:{}/'.format(source.server.server_port)
         response = requests.post(url, json=payload)
         self.assertEqual(response.status_code, 200, response.content)
-        self.assertIn("'result': True", response.content)
+        self.assertIn('emitted', response.content)
 
         source.stop()
         self.assertFalse(source.started)

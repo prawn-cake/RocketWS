@@ -112,7 +112,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
             {'address': self.client.address, 'channel': 'chat'}
         )
         response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
-        self.assertEqual(response.data['result'], True)
+        self.assertIn('subscribed', response.data['result'])
 
         self.assertEqual(len(registry.channels), 1)
         self.assertEqual(len(registry.subscribers), 1)
@@ -129,7 +129,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
             {'address': self.client.address, 'channel': 'chat'}
         )
         response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
-        self.assertEqual(response.data['result'], True)
+        self.assertIn('unsubscribed', response.data['result'])
         subscribers = registry.get_channel_subscribers('chat')
         self.assertEqual(len(subscribers), 0)
 
@@ -150,11 +150,13 @@ class JSONRPCApiTestCase(unittest.TestCase):
             {'data': {'message': 'test'}, 'channel': 'chat'}
         )
         response = JSONRPCResponseManager.handle(request.json, ms_dispatcher)
-        self.assertEqual(response.data['result'], True)
+        self.assertIn('emitted', response.data['result'])
 
         for client in client_1, client_2, client_3:
             # mock for send method is injected in get_ws_client
-            client.ws.send.assert_called_once_with('{"message": "test"}')
+            # message type will be added automatically
+            client.ws.send.assert_called_once_with(
+                '{"message": "test", "type": "message"}')
 
     def test_send_data(self):
         """Test ui send_data.
@@ -179,11 +181,12 @@ class JSONRPCApiTestCase(unittest.TestCase):
             }
         )
         response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
-        self.assertEqual(response.data['result'], True)
+        self.assertIn('emitted', response.data['result'])
 
         for client in client_1, client_2:
             # mock for send method is injected in get_ws_client
-            client.ws.send.assert_called_once_with('{"message": "test"}')
+            client.ws.send.assert_called_once_with(
+                '{"message": "test", "type": "message"}')
 
         # Not subscribed client3 send message to `chat`, expected an error
         client_3 = get_ws_client()

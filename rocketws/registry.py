@@ -66,6 +66,11 @@ class ChannelRegistry(object):
 
     __metaclass__ = Singleton
 
+    MESSAGE_TYPES = {
+        'broadcast': 'broadcast',
+        'message': 'message'
+    }
+
     def __init__(self, **kwargs):
         self.registry = defaultdict(list)
         logger.debug('Init ChannelRegistry')
@@ -85,7 +90,7 @@ class ChannelRegistry(object):
             # Store each client as a proxy weak reference
             active_subscribers.update({client.address: weakref.proxy(client)})
         self.registry[channel] = active_subscribers.values()
-        return True
+        return 'subscribed'
 
     def unsubscribe(self, channel, *clients):
         active_subscribers = self._get_active_subscribers_idx(channel)
@@ -99,7 +104,7 @@ class ChannelRegistry(object):
         else:
             self.registry[channel] = active_subscribers.values()
 
-        return True
+        return 'unsubscribed'
 
     def _get_active_subscribers_idx(self, channel):
         """Get active clients idx for particular channel,
@@ -180,17 +185,21 @@ class ChannelRegistry(object):
             raise ValueError(
                 'emit: passed data is not a dict-like: {}'.format(data))
 
+        data.update(type=self.MESSAGE_TYPES['message'])
         serialized_data = json.dumps(data)
         subscribers = self.get_channel_subscribers(channel)
 
         logger.debug(
             'Channel contains {} subscribers'.format(len(subscribers)))
+
+        emitted = 0
         for client in subscribers:
             if client.address not in ignore_clients:
                 client.ws.send(serialized_data)
+                emitted += 1
 
         logger.debug('Emit:ok')
-        return True
+        return 'emitted: {}'.format(emitted)
 
     def notify_all(self, data):
         """Notify all subscribers
@@ -202,13 +211,17 @@ class ChannelRegistry(object):
             raise ValueError(
                 'notify_all: passed data is not dict-like: {}'.format(data))
 
+        data.update(type=self.MESSAGE_TYPES['broadcast'])
         logger.debug('Notify all with data {}'.format(data))
         serialized_data = json.dumps(data)
+
+        notified = 0
         for client in self.subscribers:
             client.ws.send(serialized_data)
+            notified += 1
         logger.debug('Notify all:ok')
 
-        return True
+        return 'notified: {}'.format(notified)
 
     def __unicode__(self):
         return unicode(

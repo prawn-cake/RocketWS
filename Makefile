@@ -13,6 +13,11 @@ run: env
 # target: run - run server in console mode
 	@$(PYTHON) $(CURDIR)/rocketws/server.py
 
+.PHONY: shell
+shell:
+# target: Run command line interface
+	@$(PYTHON) $(CURDIR)/rocketws/shell.py
+
 .PHONY: env
 env:
 # target: env - create virtualenv and install packages

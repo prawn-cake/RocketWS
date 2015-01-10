@@ -82,3 +82,14 @@ def emit(channel, data):
 def notify_all(data):
     logger_ms.info('invoke `notify_all` command, args: {}'.format(data))
     return registry.notify_all(data)
+
+
+@ms_dispatcher.add_method
+def get_subscribers(channel=None):
+    logger_ms.info('invoke `get_subscribers` command, args: {}'.format(channel))
+
+    if channel is None:
+        clients = registry.subscribers
+    else:
+        clients = registry.get_channel_subscribers(channel)
+    return [c.address for c in clients]
