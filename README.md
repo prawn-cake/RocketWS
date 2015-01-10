@@ -61,11 +61,17 @@ Command line interface
 Installation/Deployment
 ------------------------
 
-### Supervisor way
+### Develop way
 
 * Get source code: ```git clone https://github.com/prawn-cake/RocketWS.git <dir:RocketWS>```
 
 * Setup virtualenv: ```cd <dir:RocketWS> && make env```
+
+* Run it: ```make run```
+
+### Supervisor way
+
+* Get source code and setup virtualenv as described above
 
 * Install supervisor: ```sudo aptitude install supervisor  # Debian-way```
 
