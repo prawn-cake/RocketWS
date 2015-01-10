@@ -5,7 +5,7 @@ logbook==0.8.1
 
 # Message sources
 pika==0.9.14
-flask==0.10.0
+flask==0.10.1
 
 # gevent-websocket accelerators, recommended to increase performance
 wsaccel==0.6.2
