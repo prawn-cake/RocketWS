@@ -25,7 +25,7 @@ Workflow
 
 Interactions
 ------------
-Two main types of server interactions are supported:
+Several main types of server interactions are supported:
 
 * WebSockets - is used by browser-like clients;
 * MessagesSources - is used by backend applications;
