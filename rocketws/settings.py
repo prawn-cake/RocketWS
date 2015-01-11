@@ -4,7 +4,7 @@
 MESSAGES_SOURCE = {
     'ADAPTER': 'http',  # Possible values: ['rabbitmq', 'http']
     'HOST': '0.0.0.0',
-    'PORT': 9999,
+    'PORT': 59999,
     'USERNAME': 'abc',
     'PASSWORD': '',
 
@@ -16,7 +16,7 @@ MESSAGES_SOURCE = {
 
 WEBSOCKETS = {
     'HOST': '0.0.0.0',
-    'PORT': 8000,
+    'PORT': 58000,
     'DEBUG': True,
     'LOCATION': '/'
 }
