@@ -22,3 +22,5 @@ ui/node_modules
 *.DS_Store
 MANIFEST
 dist/*
+
+atlassian-ide-plugin.xml
