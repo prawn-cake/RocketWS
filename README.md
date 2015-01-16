@@ -115,3 +115,9 @@ stdout_logfile=<dir:logdir>/rocketws.log
 
 * ```docker pull prawncake/rocketws```
 * ```docker run -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws make run_bg```
+
+
+### Nginx proxy
+Useful for production
+
+* [Nginx websocket proxying article](http://nginx.org/en/docs/http/websocket.html)
