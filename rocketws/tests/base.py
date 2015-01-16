@@ -45,12 +45,8 @@ class CommonMethodsTestCase(unittest.TestCase):
     def test_get_configured_messages_source(self):
         from rocketws.server import get_configured_messages_source
 
-        # currently supported `http` and `rabbitmq` sources
         http_source = get_configured_messages_source(name='http')
         self.assertIsInstance(http_source, BaseMessagesSource)
-
-        rabbitmq_source = get_configured_messages_source(name='rabbitmq')
-        self.assertIsInstance(rabbitmq_source, BaseMessagesSource)
 
         self.assertRaises(
             ImproperlyConfigured,
