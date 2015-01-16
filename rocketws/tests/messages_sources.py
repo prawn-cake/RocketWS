@@ -47,10 +47,12 @@ class RabbitMQMessagesSourceTestCase(unittest.TestCase):
     def setUp(self):
         self.source_name = 'rabbitmq'
 
+    @unittest.skip('Deprecated')
     def test_configurator(self):
         source = get_configured_messages_source(self.source_name)
         self.assertIsInstance(source, RabbitMQMessagesSource)
 
+    @unittest.skip('Deprecated')
     def test_start_stop(self):
         source = get_configured_messages_source(self.source_name)
         source.start()
