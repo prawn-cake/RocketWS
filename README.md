@@ -121,3 +121,5 @@ stdout_logfile=<dir:logdir>/rocketws.log
 Useful for production
 
 * [Nginx websocket proxying article](http://nginx.org/en/docs/http/websocket.html)
+
+* Add custom `proxy_read_timeout`, because it equals 60s by default, `proxy_read_timeout 604800;  # one-week timeout;` for example
