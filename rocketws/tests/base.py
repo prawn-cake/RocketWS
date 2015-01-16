@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+import json
 import unittest
 from random import randint
 from jsonrpc.jsonrpc2 import JSONRPC20Request
+from rocketws.exceptions import ImproperlyConfigured
 
 from rocketws.registry import ChannelRegistry, SocketRegistry
 from geventwebsocket.handler import Client
 from jsonrpc import JSONRPCResponseManager
 from rocketws.rpc import ui_dispatcher, ms_dispatcher, registry
 import mock
+from rocketws.messages_sources.base import BaseMessagesSource
 
 
 def get_ws_client(address='127.0.0.1', port=None):
@@ -16,6 +19,44 @@ def get_ws_client(address='127.0.0.1', port=None):
     client = Client(address=tuple([address, port]), ws=mock.MagicMock())
     client.ws.send = mock.MagicMock(return_value=True)
     return client
+
+
+class ModelsTestCase(unittest.TestCase):
+    def test_base_message_source(self):
+        class ConcreteMessagesSource(BaseMessagesSource):
+            pass
+
+        # Can't instantiate abstract class with abstract methods start, stop
+        self.assertRaises(TypeError, ConcreteMessagesSource)
+
+        class ConcreteMessagesSource2(BaseMessagesSource):
+            def start(self):
+                pass
+
+            def stop(self):
+                pass
+
+        # Can't instantiate MessagesSource with un-callable callback
+        self.assertRaises(
+            ValueError, ConcreteMessagesSource2, 'not a function')
+
+
+class CommonMethodsTestCase(unittest.TestCase):
+    def test_get_configured_messages_source(self):
+        from rocketws.server import get_configured_messages_source
+
+        # currently supported `http` and `rabbitmq` sources
+        http_source = get_configured_messages_source(name='http')
+        self.assertIsInstance(http_source, BaseMessagesSource)
+
+        rabbitmq_source = get_configured_messages_source(name='rabbitmq')
+        self.assertIsInstance(rabbitmq_source, BaseMessagesSource)
+
+        self.assertRaises(
+            ImproperlyConfigured,
+            get_configured_messages_source,
+            name='unknown'
+        )
 
 
 class ChannelRegistryTestCase(unittest.TestCase):
@@ -64,14 +105,27 @@ class ChannelRegistryTestCase(unittest.TestCase):
         client_1 = get_ws_client()
         client_2 = get_ws_client()
         client_3 = get_ws_client()
-        self.registry.subscribe(channel, client_1)
-        self.registry.subscribe(channel, client_2)
-        self.registry.subscribe(channel, client_3)
+        self.registry.subscribe(channel, client_1, client_2, client_3)
 
         # Expect {<channel>: [client_1, client_2, client_3]} storage
         self.assertEqual(len(self.registry.subscribers), 3)
         self.assertEqual(
             len(self.registry.get_channel_subscribers(channel)), 3)
+
+    def test_notify_all(self):
+        self.registry.flush_all()
+        channel = 'chat'
+        client_1 = get_ws_client()
+        client_2 = get_ws_client()
+        client_3 = get_ws_client()
+        self.registry.subscribe(channel, client_1, client_2, client_3)
+        self.registry.notify_all(data={'message': 'test'})
+
+        for client in client_1, client_2, client_3:
+            # mock for send method is injected in get_ws_client
+            # message type will be added automatically
+            client.ws.send.assert_called_once_with(
+                '{"message": "test", "__type": "broadcast"}')
 
 
 class SocketRegistryTestCase(unittest.TestCase):
@@ -156,7 +210,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
             # mock for send method is injected in get_ws_client
             # message type will be added automatically
             client.ws.send.assert_called_once_with(
-                '{"message": "test", "type": "message"}')
+                '{"message": "test", "__type": "message"}')
 
     def test_send_data(self):
         """Test ui send_data.
@@ -175,7 +229,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
         request = JSONRPC20Request(
             'send_data',
             {
-                'data': {'message': 'test'},
+                'data': {'message': 'test', 'type': 'my_type'},
                 'channel': 'chat',
                 'address': client_1.address
             }
@@ -185,8 +239,10 @@ class JSONRPCApiTestCase(unittest.TestCase):
 
         for client in client_1, client_2:
             # mock for send method is injected in get_ws_client
-            client.ws.send.assert_called_once_with(
-                '{"message": "test", "type": "message"}')
+            params = json.dumps({
+                "message": "test", "type": "my_type", "__type": "message"
+            })
+            client.ws.send.assert_called_once_with(params)
 
         # Not subscribed client3 send message to `chat`, expected an error
         client_3 = get_ws_client()

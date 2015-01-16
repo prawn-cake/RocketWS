@@ -3,7 +3,7 @@ import collections
 
 from gevent import Greenlet
 import logbook
-
+import abc
 
 logger = logbook.Logger('ms')
 
@@ -13,6 +13,8 @@ class BaseMessagesSource(object):
     """Base class for messages source.
     For subclassing it do override `_run` method.
     """
+
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, on_message_callback, *args, **kwargs):
         """
@@ -35,11 +37,13 @@ class BaseMessagesSource(object):
         # on_message_callback must be a function like `def x(raw_message)`
         self.on_message_callback = on_message_callback
 
+    @abc.abstractmethod
     def start(self):
         raise NotImplementedError(
             '{} is not implemented `start` method'.format(
                 self.__class__.__name__))
 
+    @abc.abstractmethod
     def stop(self):
         raise NotImplementedError(
             '{} is not implemented `stop` method'.format(

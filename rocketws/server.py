@@ -92,14 +92,18 @@ def get_configured_messages_source(name=None):
     :return: BaseMessagesSource implementation instance
     :raise ImproperlyConfigured:
     """
-    pkg = importlib.import_module(
-        'rocketws.messages_sources.{}'.format(
-            name or settings.MESSAGES_SOURCE['ADAPTER']))
+    try:
+        pkg = importlib.import_module(
+            'rocketws.messages_sources.{}'.format(
+                name or settings.MESSAGES_SOURCE['ADAPTER']))
+    except ImportError as err:
+        raise ImproperlyConfigured(err)
+
     try:
         source_cls = pkg.__dict__['source']
     except KeyError:
         raise ImproperlyConfigured(
-            'Wrong MESSAGES_SOURCE adapter: {}'.format(
+            'Source is not found for adapter: {}'.format(
                 settings.MESSAGES_SOURCE['ADAPTER']))
 
     def on_message_callback(raw_message):
@@ -112,7 +116,6 @@ def get_configured_messages_source(name=None):
     return source
 
 
-# TODO: add daemonization (supervisor or gunicorn or as a linux daemon)
 if __name__ == '__main__':
     logger.info('Starting all services')
     server = WebSocketServer(

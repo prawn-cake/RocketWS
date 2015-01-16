@@ -123,6 +123,15 @@ class ChannelRegistry(object):
                 continue
         return active_clients_idx
 
+    @classmethod
+    def _add_message_type(cls, data, _type):
+        """Helper method to add meta info for message
+
+        :param data:
+        :param _type:
+        """
+        data.update(__type=cls.MESSAGE_TYPES[_type])
+
     @property
     def channels(self):
         return self.registry.keys()
@@ -185,7 +194,7 @@ class ChannelRegistry(object):
             raise ValueError(
                 'emit: passed data is not a dict-like: {}'.format(data))
 
-        data.update(type=self.MESSAGE_TYPES['message'])
+        self._add_message_type(data, 'message')
         serialized_data = json.dumps(data)
         subscribers = self.get_channel_subscribers(channel)
 
@@ -211,7 +220,7 @@ class ChannelRegistry(object):
             raise ValueError(
                 'notify_all: passed data is not dict-like: {}'.format(data))
 
-        data.update(type=self.MESSAGE_TYPES['broadcast'])
+        self._add_message_type(data, 'broadcast')
         logger.debug('Notify all with data {}'.format(data))
         serialized_data = json.dumps(data)
 
