@@ -58,6 +58,17 @@ Command line interface
 * Type ```help``` for more information
 
 
+Configuration
+--------------
+Main settings file is `rocketws/settings.py`
+
+There are two parameters:
+
+* `MESSAGES_SOURCE` -- control MessagesSource parameters for backend interaction. Default port: *59999* 
+
+* `WEBSOCKETS` -- control WebSockets server parameters for clients interaction. Default port: *58000*
+
+
 Installation/Deployment
 ------------------------
 ### Dependencies
@@ -96,4 +107,11 @@ stdout_logfile=<dir:logdir>/rocketws.log
 
 
 ### Docker way
-In progress
+**NOTE:** Docker works fine (without any workarounds) only under x86_64 arch (based on my tests)
+
+* [Install docker](https://docs.docker.com/installation/ubuntulinux/)
+
+**NOTE:** use ```sudo``` with the following commands or add your user to a docker group
+
+* ```docker pull prawncake/rocketws```
+* ```docker run -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws make run_bg```
