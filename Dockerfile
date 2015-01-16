@@ -19,7 +19,8 @@ EXPOSE 59999
 # Setup RocketWS
 RUN easy_install pip && \
     pip install virtualenv && \
-    git clone https://github.com/prawn-cake/RocketWS.git /opt/rocketws
+    git clone https://github.com/prawn-cake/RocketWS.git /opt/rocketws && \
+    mkdir -p /var/log/rocketws
 
 WORKDIR /opt/rocketws
 RUN make env

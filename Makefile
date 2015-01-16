@@ -17,7 +17,7 @@ run: env
 .PHONY: run_bg
 run_bg: env
 # target: run_bg - run server in background
-	@$(PYTHON) $(CURDIR)/rocketws/server.py &> /tmp/rocketws.log &
+	@nohup $(PYTHON) $(CURDIR)/rocketws/server.py >> /var/log/rocketws.log &
 
 .PHONY: shell
 shell:
