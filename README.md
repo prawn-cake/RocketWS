@@ -60,6 +60,8 @@ Command line interface
 
 Installation/Deployment
 ------------------------
+### Dependencies
+Make sure that you have ```libevent-2.0-5``` or ```libev4``` in your system.
 
 ### Develop way
 
