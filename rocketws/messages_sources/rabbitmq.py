@@ -5,6 +5,10 @@ https://pika.readthedocs.org/en/latest/examples/asynchronous_consumer_example.ht
 
 NOTE: pika doesn't support python3
 """
+from rocketws.exceptions import ImproperlyConfigured
+import gevent
+from rocketws.messages_sources.base import BaseMessagesSourceAsync
+import logbook
 
 try:
     import pika
@@ -12,11 +16,6 @@ except ImportError as err:
     raise ImproperlyConfigured('Error loading pika module: {}'.format(err))
 else:
     from pika import PlainCredentials, ConnectionParameters, SelectConnection
-
-import gevent
-from rocketws.exceptions import ImproperlyConfigured
-from rocketws.messages_sources.base import BaseMessagesSourceAsync
-import logbook
 
 
 pika.adapters.select_connection.SELECT_TYPE = 'epoll'
