@@ -122,6 +122,16 @@ stdout_logfile=<dir:logdir>/rocketws.log
 
 Container will be started and then you can connect to `tcp:58000` for WebSockets and to `tcp:59999` for MessagesSource
 
+#### Brief docker howto
+
+* Attach to `rocketws` container: `docker attach rocketws`
+* List of running containers: `docker ps -a`
+* Stop/start/remove container: `docker {start|stop|rm} rocketws`
+
+*NOTE:* We use exact name because we set it up in run command as a `--name` option otherwise we must use container ID
+
+* [More command-line docs](https://docs.docker.com/reference/commandline/cli/)
+
 
 ### Nginx proxy
 Useful for production
