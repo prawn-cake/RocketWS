@@ -14,6 +14,11 @@ run: env
 # target: run - run server in console mode
 	@$(PYTHON) $(CURDIR)/rocketws/server.py
 
+.PHONY: run_bg
+run_bg:
+# target: run_bg - run server in background
+	@make run & disown
+
 .PHONY: shell
 shell:
 # target: Run command line interface

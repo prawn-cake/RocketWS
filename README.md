@@ -114,7 +114,11 @@ stdout_logfile=<dir:logdir>/rocketws.log
 **NOTE:** use `sudo` with the following commands or add your user to a docker group
 
 * `docker pull prawncake/rocketws`
-* `docker run --name rocketws -itd -p 58000:58000 -p 59999:59999 prawncake/rocketws make run`
+* `docker run --name rocketws -it -p 58000:58000 -p 59999:59999 prawncake/rocketws /bin/bash`
+* You will be attached to the container, run application in the background with `make run_bg`
+* Detach from the container with `Ctrl+p, Ctrl+q`
+
+*NOTE:* For some reasons docket can't run `nohup`, `disown`, `&` shell instructions from command line or within Makefile commands
 
 Container will be started and then you can connect to `tcp:58000` for WebSockets and to `tcp:59999` for MessagesSource
 

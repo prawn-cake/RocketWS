@@ -20,11 +20,6 @@ RUN easy_install pip && \
     mkdir -p /var/log/rocketws
 
 WORKDIR /opt/rocketws
-RUN make env && \
-    touch run.sh && \
-    chmod +x run.sh && \
-    echo "#!/bin/bash" >> run.sh && \
-    echo "make run & disown" >> run.sh
+RUN make env
 
-CMD /bin/bash run.sh
 # Run command is `docker run -itd -p 58000:58000 -p 59999:59999 prawncake/rocketws make run`
