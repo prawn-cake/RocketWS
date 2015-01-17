@@ -125,6 +125,7 @@ Container will be started and then you can connect to `tcp:58000` for WebSockets
 #### Brief docker howto
 
 * Attach to `rocketws` container: `docker attach rocketws`
+* Detach from the container: `Ctrl+p, Ctrl+q`
 * List of running containers: `docker ps -a`
 * Stop/start/remove container: `docker {start|stop|rm} rocketws`
 
