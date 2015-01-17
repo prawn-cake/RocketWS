@@ -22,7 +22,4 @@ RUN easy_install pip && \
 WORKDIR /opt/rocketws
 RUN make env
 
-# Execute the command once container will be run
-ENTRYPOINT make run_bg
-
-# Run command is `docker run -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws`
+# Run command is `docker run -itd -p 58000:58000 -p 59999:59999 prawncake/rocketws make run_bg`

@@ -37,25 +37,25 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
 
 * WebSockets
   * **Subscribe** to channel `chat`:
-  ```{"id": 0, "jsonrpc": "2.0", "method": "subscribe", "params": {"channel": "chat"}}```
+  `{"id": 0, "jsonrpc": "2.0", "method": "subscribe", "params": {"channel": "chat"}}`
   
   * **Unsubscribe** from channel `chat`:
-  ```{"id": 0, "jsonrpc": "2.0", "method": "unsubscribe", "params": {"channel": "chat"}}```
+  `{"id": 0, "jsonrpc": "2.0", "method": "unsubscribe", "params": {"channel": "chat"}}`
   
   * **Send data** to channel `chat`:
-  ```{"id": 0, "jsonrpc": "2.0", "method": "send_data", "params": {"channel": "chat", "data": {"message": "hola!"}}}```
+  `{"id": 0, "jsonrpc": "2.0", "method": "send_data", "params": {"channel": "chat", "data": {"message": "hola!"}}}`
     
 
 * MessagesSources
-  * **Emit** message for all subscribers for channel `chat`: ```{"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}```
-  * **Notify all** subscribers (some system messages): ```{"id": 0, "jsonrpc": "2.0", "method": "notify_all", "params": {"data": {"message": "Broadcase system message"}}}```
+  * **Emit** message for all subscribers for channel `chat`: `{"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}`
+  * **Notify all** subscribers (some system messages): `{"id": 0, "jsonrpc": "2.0", "method": "notify_all", "params": {"data": {"message": "Broadcase system message"}}}`
 
 
 Command line interface
 -----------------------
 
-* Run shell: ```make shell```
-* Type ```help``` for more information
+* Run shell: `make shell`
+* Type `help` for more information
 
 
 Configuration
@@ -72,25 +72,25 @@ There are two parameters:
 Installation/Deployment
 ------------------------
 ### Dependencies
-Make sure that you have ```libevent-2.0-5``` or ```libev4``` in your system.
+Make sure that you have `libevent-2.0-5` or `libev4` in your system.
 
 ### Develop way
 
-* Get source code: ```git clone https://github.com/prawn-cake/RocketWS.git <dir:RocketWS>```
+* Get source code: `git clone https://github.com/prawn-cake/RocketWS.git <dir:RocketWS>`
 
-* Setup virtualenv: ```cd <dir:RocketWS> && make env```
+* Setup virtualenv: `cd <dir:RocketWS> && make env`
 
-* Check settings at: ```<dir:RocketWS>/rocketws/settings.py```
+* Check settings at: `<dir:RocketWS>/rocketws/settings.py`
 
-* Run it: ```make run```
+* Run it: `make run`
 
 ### Supervisor way
 
 * Get source code, setup virtualenv and check settings as described above
 
-* Install supervisor: ```sudo aptitude install supervisor  # Debian-way```
+* Install supervisor: `sudo aptitude install supervisor  # Debian-way`
 
-* Add supervisor config: ```sudo vim /etc/supervisor/conf.d/rocketws.conf```
+* Add supervisor config: `sudo vim /etc/supervisor/conf.d/rocketws.conf`
 
 ```
 [program:rocketws]
@@ -101,9 +101,9 @@ user=<str:user>
 stdout_logfile=<dir:logdir>/rocketws.log
 ```
 
-* Update supervisor configurations: ```sudo supervisorctl reread && sudo supervisorctl update```
+* Update supervisor configurations: `sudo supervisorctl reread && sudo supervisorctl update`
 
-* Start RocketWS with: ```sudo supervisorctl start rocketws```
+* Start RocketWS with: `sudo supervisorctl start rocketws`
 
 
 ### Docker way
@@ -111,11 +111,12 @@ stdout_logfile=<dir:logdir>/rocketws.log
 
 * [Install docker](https://docs.docker.com/installation/ubuntulinux/)
 
-**NOTE:** use ```sudo``` with the following commands or add your user to a docker group
+**NOTE:** use `sudo` with the following commands or add your user to a docker group
 
-* ```docker pull prawncake/rocketws```
-* ```docker run --name rocketws -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws```
-Container will be started and then you can
+* `docker pull prawncake/rocketws`
+* `docker run --name rocketws -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws`
+
+Container will be started and then you can connect to `tcp:58000` for WebSockets and to `tcp:59999` for MessagesSource
 
 
 ### Nginx proxy
