@@ -114,7 +114,8 @@ stdout_logfile=<dir:logdir>/rocketws.log
 **NOTE:** use ```sudo``` with the following commands or add your user to a docker group
 
 * ```docker pull prawncake/rocketws```
-* ```docker run -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws make run_bg```
+* ```docker run --name rocketws -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws```
+Container will be started and then you can
 
 
 ### Nginx proxy

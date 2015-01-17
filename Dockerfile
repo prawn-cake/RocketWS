@@ -10,11 +10,8 @@ RUN apt-get update && apt-get install -y \
     git \
     make
 
-# for MessagesSource
-EXPOSE 58000
-
-# for WebSockets server
-EXPOSE 59999
+# for MessagesSource and WebSockets server
+EXPOSE 58000 59999
 
 # Setup RocketWS
 RUN easy_install pip && \
@@ -25,5 +22,7 @@ RUN easy_install pip && \
 WORKDIR /opt/rocketws
 RUN make env
 
+# Execute the command once container will be run
+ENTRYPOINT make run_bg
 
-# Run command is `docker run -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws make run_bg`
+# Run command is `docker run -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws`
