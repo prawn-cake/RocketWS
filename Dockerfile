@@ -22,4 +22,4 @@ RUN easy_install pip && \
 WORKDIR /opt/rocketws
 RUN make env
 
-# Run command is `docker run -itd -p 58000:58000 -p 59999:59999 prawncake/rocketws make run_bg`
+# Run command is `docker run -itd -p 58000:58000 -p 59999:59999 prawncake/rocketws make run`

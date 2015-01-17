@@ -14,11 +14,6 @@ run: env
 # target: run - run server in console mode
 	@$(PYTHON) $(CURDIR)/rocketws/server.py
 
-.PHONY: run_bg
-run_bg:
-# target: run_bg - run server in background
-	@$(PYTHON) $(CURDIR)/rocketws/server.py &>> /var/log/rocketws.log &
-
 .PHONY: shell
 shell:
 # target: Run command line interface
@@ -44,4 +39,4 @@ pull_image:
 .PHONY: run_docker
 run_docker:
 # target: run_docker - Run rocketws with docker
-	@docker run -i -t -d -p 58000:58000 -p 59999:59999 $(DOCKER_IMAGE) make run_bg
+	@docker run -i -t -d -p 58000:58000 -p 59999:59999 $(DOCKER_IMAGE) make run
