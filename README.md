@@ -114,7 +114,7 @@ stdout_logfile=<dir:logdir>/rocketws.log
 **NOTE:** use `sudo` with the following commands or add your user to a docker group
 
 * `docker pull prawncake/rocketws`
-* `docker run --name rocketws -i -t -d -p 58000:58000 -p 59999:59999 prawncake/rocketws`
+* `docker run --name rocketws -itd -p 58000:58000 -p 59999:59999 prawncake/rocketws make run_bg`
 
 Container will be started and then you can connect to `tcp:58000` for WebSockets and to `tcp:59999` for MessagesSource
 
