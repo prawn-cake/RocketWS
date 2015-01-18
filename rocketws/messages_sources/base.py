@@ -2,10 +2,10 @@
 import collections
 
 from gevent import Greenlet
-import logbook
+import logging
 import abc
 
-logger = logbook.Logger('ms')
+logger = logging.getLogger('ms')
 
 
 class BaseMessagesSource(object):

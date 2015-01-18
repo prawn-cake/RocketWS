@@ -8,7 +8,7 @@ NOTE: pika doesn't support python3
 from rocketws.exceptions import ImproperlyConfigured
 import gevent
 from rocketws.messages_sources.base import BaseMessagesSourceAsync
-import logbook
+import logging
 
 try:
     import pika
@@ -21,7 +21,7 @@ else:
 pika.adapters.select_connection.SELECT_TYPE = 'epoll'
 # pika_logger = get_logger(name='pika', log_level='INFO')
 
-logger = logbook.Logger('ms:rabbitmq')
+logger = logging.getLogger('ms:rabbitmq')
 
 
 class RabbitMQMessagesSource(BaseMessagesSourceAsync):

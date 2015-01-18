@@ -6,13 +6,13 @@ import os.path as op
 sys.path.append(op.abspath(op.dirname(__file__)) + '/../')
 
 import cmd
-import logbook
+import logging
 from rocketws import settings
 import requests
 import ujson as json
 
 
-logger = logbook.Logger('registry')
+logger = logging.getLogger('registry')
 CONNECT_URL = 'http://{HOST}:{PORT}/'.format(**settings.MESSAGES_SOURCE)
 
 

@@ -1,7 +1,6 @@
 gevent-websocket==0.9.3
 # simple-models==0.2.0
 json-rpc==1.8.1
-logbook==0.8.1
 
 # Message sources (HTTP is recommended)
 # pika==0.9.14

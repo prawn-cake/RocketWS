@@ -6,9 +6,9 @@ import collections
 import json
 
 from rocketws.helpers import Singleton
-import logbook
+import logging
 
-logger = logbook.Logger('registry')
+logger = logging.getLogger('registry')
 
 
 class SocketRegistry(object):

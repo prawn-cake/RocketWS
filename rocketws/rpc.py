@@ -5,12 +5,12 @@ There are two type of methods to dispatch:
     * ms_dispatch rpc methods are defined for messages sources handlers
 """
 
-import logbook
+import logging
 from jsonrpc import dispatcher as ui_dispatcher, Dispatcher
 from rocketws.exceptions import RPCMethodError
 from rocketws.registry import ChannelRegistry, SocketRegistry
 
-logger = logbook.Logger('jsonrpc:ui')
+logger = logging.getLogger('jsonrpc:ui')
 
 registry = ChannelRegistry()
 socket_registry = SocketRegistry()
@@ -62,7 +62,7 @@ def send_data(channel, data, address):
 
 # MessagesSources
 
-logger_ms = logbook.Logger('jsonrpc:ms')
+logger_ms = logging.getLogger('jsonrpc:ms')
 
 
 @ms_dispatcher.add_method

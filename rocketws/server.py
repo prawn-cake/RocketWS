@@ -15,13 +15,16 @@ from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 from rocketws.exceptions import ImproperlyConfigured
 from jsonrpc import JSONRPCResponseManager
 import settings
-import logbook
+import logging
+import logging.config
+logging.config.dictConfig(settings.LOGGING)
+
 from rocketws.rpc import (
     registry, socket_registry, ui_dispatcher, ms_dispatcher
 )
 
 
-logger = logbook.Logger('server')
+logger = logging.getLogger('server')
 
 
 class MainApplication(WebSocketApplication):
