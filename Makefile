@@ -4,6 +4,7 @@ PYTHON=$(ENV_DIR)/bin/python
 
 PROJECT=rocketws
 DOCKER_IMAGE=prawncake/rocketws
+SETTINGS=rocketws.settings.default
 
 help:
 # target: help - Display callable targets
@@ -12,7 +13,7 @@ help:
 .PHONY: run
 run: env
 # target: run - run server in console mode
-	@$(PYTHON) $(CURDIR)/manage.py runserver
+	@$(PYTHON) $(CURDIR)/manage.py runserver --settings=$(SETTINGS)
 
 .PHONY: run_bg
 run_bg:
@@ -22,7 +23,7 @@ run_bg:
 .PHONY: shell
 shell:
 # target: Run command line interface
-	@$(PYTHON) $(CURDIR)/rocketws/shell.py
+	@$(PYTHON) manage.py shell
 
 .PHONY: env
 env:
@@ -33,7 +34,7 @@ env:
 .PHONY: test
 test: env
 # target: test - Run tests
-	@$(PYTHON) -m unittest -v rocketws.tests
+	@$(PYTHON) manage.py tests
 
 
 .PHONY: pull_image

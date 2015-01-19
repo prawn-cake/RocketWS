@@ -26,15 +26,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     from rocketws.conf import configure_settings
-    configure_settings(args.settings or 'rocketws.settings.default')
+
+    settings_path = args.settings or 'rocketws.settings.default'
+    print('\n--> Configuring settings: {}\n'.format(settings_path))
+    configure_settings(settings_path)
 
     if args.method == 'runserver':
         from rocketws.server import run_server
         run_server()
     elif args.method == 'tests':
-        # FIXME: doesn't work
         import unittest
-        unittest.main(module='rocketws.tests', verbosity=2)
+        import sys
+        unittest.main(module='rocketws.tests', argv=sys.argv[:1], verbosity=2)
     elif args.method == 'shell':
         from rocketws.shell import RocketWSShell
         RocketWSShell().cmdloop()
