@@ -147,6 +147,11 @@ Container will be started and then you can connect to `tcp:58000` for WebSockets
 * [More command-line docs](https://docs.docker.com/reference/commandline/cli/)
 
 
+### Chef way
+
+* Just use [rocketws chef cookbook](https://github.com/prawn-cake/rocketws-cookbook)
+
+
 ### Nginx proxy
 Useful for production
 
