@@ -221,7 +221,7 @@ class JSONRPCApiTestCase(unittest.TestCase):
 
         registry.subscribe('chat', client_1, client_2)
 
-        # Assume that client1 send message to chat and receive
+        # Assume that client1 send message to chat
         request = JSONRPC20Request(
             'send_data',
             {
@@ -233,7 +233,8 @@ class JSONRPCApiTestCase(unittest.TestCase):
         response = JSONRPCResponseManager.handle(request.json, ui_dispatcher)
         self.assertIn('emitted', response.data['result'])
 
-        for client in client_1, client_2:
+        # only client 2 receives a message
+        for client in client_2, :
             # mock for send method is injected in get_ws_client
             params = json.dumps({
                 "message": "test", "type": "my_type", "__type": "message"

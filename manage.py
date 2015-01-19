@@ -32,6 +32,7 @@ if __name__ == '__main__':
         from rocketws.server import run_server
         run_server()
     elif args.method == 'tests':
+        # FIXME: doesn't work
         import unittest
         unittest.main(module='rocketws.tests', verbosity=2)
     elif args.method == 'shell':

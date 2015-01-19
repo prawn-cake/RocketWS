@@ -44,7 +44,13 @@ def unsubscribe(channel, address):
 
 @ui_dispatcher.add_method
 def send_data(channel, data, address):
-    # TODO: rename the method
+    """
+
+    :param channel:
+    :param data:
+    :param address: is injected automatically
+    :return: :raise RPCMethodError:
+    """
     logger.info('invoke `send_data` command, args: {}'.format(
         (channel, address)))
     client = socket_registry.get_client(address)
@@ -54,10 +60,7 @@ def send_data(channel, data, address):
         logger.error('Error: {}; Data: {}'.format(msg, data))
         raise RPCMethodError(msg)
 
-    # FIXME: think about whether we need to omit send message for sender or not
-    # return registry.emit(channel, data, ignore_clients=(client.address, ))
-
-    return registry.emit(channel, data)
+    return registry.emit(channel, data, ignore_clients=(client.address, ))
 
 
 # MessagesSources
