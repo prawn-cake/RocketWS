@@ -22,7 +22,7 @@ WEBSOCKETS = {
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
             'format': '[%(asctime)s] %(levelname)s: %(name)s: %(message)s'
@@ -39,13 +39,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.WatchedFileHandler',
-            'filename': '/tmp/rocketws.log',
-            'formatter': 'verbose',
-            'encoding': 'utf-8'
-        }
 
     },
     'loggers': {
@@ -56,7 +49,7 @@ LOGGING = {
         # }
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': 'DEBUG'
     }
 }
