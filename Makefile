@@ -12,7 +12,7 @@ help:
 .PHONY: run
 run: env
 # target: run - run server in console mode
-	@$(PYTHON) $(CURDIR)/rocketws/server.py
+	@$(PYTHON) $(CURDIR)/manage.py runserver
 
 .PHONY: run_bg
 run_bg:

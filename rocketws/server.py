@@ -14,7 +14,9 @@ import importlib
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 from rocketws.exceptions import ImproperlyConfigured
 from jsonrpc import JSONRPCResponseManager
-import settings
+from rocketws.conf import get_settings
+settings = get_settings()
+
 import logging
 import logging.config
 logging.config.dictConfig(settings.LOGGING)
@@ -119,7 +121,10 @@ def get_configured_messages_source(name=None):
     return source
 
 
-if __name__ == '__main__':
+def run_server():
+    """Application run method
+
+    """
     logger.info('Starting all services')
     server = WebSocketServer(
         (settings.WEBSOCKETS['HOST'], settings.WEBSOCKETS['PORT']),

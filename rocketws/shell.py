@@ -7,7 +7,9 @@ sys.path.append(op.abspath(op.dirname(__file__)) + '/../')
 
 import cmd
 import logging
-from rocketws import settings
+from rocketws.conf import get_settings
+settings = get_settings()
+
 import requests
 import ujson as json
 
@@ -182,6 +184,3 @@ def get_available_channels():
         print(msg)
     else:
         return response.content
-
-if __name__ == '__main__':
-    RocketWSShell().cmdloop()
