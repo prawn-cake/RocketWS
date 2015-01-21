@@ -91,7 +91,7 @@ resources = Resource({
 })
 
 
-def get_configured_messages_source(name=None):
+def get_configured_messages_source(name=None, host=None, port=None):
     """Dynamic import for messages source
 
     :return: BaseMessagesSource implementation instance
@@ -115,24 +115,31 @@ def get_configured_messages_source(name=None):
         response = JSONRPCResponseManager.handle(raw_message, ms_dispatcher)
         return response.data
 
+    if host:
+        settings.MESSAGES_SOURCE.update(HOST=host)
+    if port:
+        settings.MESSAGES_SOURCE.update(PORT=port)
+
     source = source_cls(on_message_callback, **settings.MESSAGES_SOURCE)
     logger.debug('Configure messages source `{}`'.format(
         name or settings.MESSAGES_SOURCE['ADAPTER']))
     return source
 
 
-def run_server():
+def run_server(ws_host=None, ws_port=None, ms_host=None, ms_port=None):
     """Application run method
 
     """
     logger.info('Starting all services')
     server = WebSocketServer(
-        (settings.WEBSOCKETS['HOST'], settings.WEBSOCKETS['PORT']),
+        (ws_host or settings.WEBSOCKETS['HOST'],
+         ws_port or settings.WEBSOCKETS['PORT']),
         resources,
         debug=settings.WEBSOCKETS['DEBUG']
     )
     server.environ['SERVER_SOFTWARE'] = ''
-    messages_source = get_configured_messages_source()
+    messages_source = get_configured_messages_source(
+        host=ms_host, port=ms_port)
     try:
         messages_source.start()
         logger.info('Starting WebSocketServer on: {}'.format(server.address))
