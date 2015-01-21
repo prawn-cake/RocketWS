@@ -74,8 +74,8 @@ class ChannelRegistryTestCase(unittest.TestCase):
         self.assertEqual(registered_client.address, client.address)
         del client
 
-        # Expected NoneType reference still in sessions
-        self.assertEqual(len(self.registry.subscribers), 1)
+        # Expected NoneType reference still not in sessions
+        self.assertEqual(len(self.registry.subscribers), 0)
         self.assertEqual(
             len(self.registry.get_channel_subscribers(channel)), 0)
 
