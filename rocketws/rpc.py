@@ -65,6 +65,19 @@ def send_data(channel, data, address):
     return registry.emit(channel, data, ignore_clients=(client.address, ))
 
 
+@ui_dispatcher.add_method
+def heartbeat(address):
+    """UI heartbeat
+
+    :return:
+    """
+    len_clients = len(socket_registry.clients)
+    len_channels = len(registry.channels)
+    logger_ms.info('heartbeat from `{}`:ok (clients={}; channels='
+                   '{}))'.format(address, len_clients, len_channels))
+    return {'heartbeat': 'ok'}
+
+
 # MessagesSources
 
 logger_ms = logging.getLogger('jsonrpc:ms')
@@ -106,3 +119,13 @@ def total_subscribers(channel=None):
 def available_channels():
     logger_ms.info('invoke `available_channels` command')
     return registry.channels
+
+
+@ms_dispatcher.add_method
+def heartbeat():
+    """MessagesSource heartbeat
+
+    :return:
+    """
+    logger_ms.info('heartbeat:ok')
+    return {'heartbeat': 'ok'}
