@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
+import urlparse
 
 
 class DefaultHelpParser(argparse.ArgumentParser):
@@ -73,6 +74,16 @@ if __name__ == '__main__':
         unittest.main(module='rocketws.tests', argv=sys.argv[:1], verbosity=2)
     elif args.method == 'shell':
         from rocketws.shell import RocketWSShell
-        RocketWSShell().cmdloop()
+
+        conn_url = None
+        if args.ms_conn:
+            url = urlparse.urlparse(args.ms_conn)
+            ms_host, ms_port = '', ''
+            if url.scheme:
+                conn_url = url.geturl()
+            else:
+                conn_url = 'http://' + url.path
+
+        RocketWSShell(conn_url).cmdloop()
     else:
         parser.print_help()

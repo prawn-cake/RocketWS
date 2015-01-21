@@ -13,3 +13,8 @@ class RPCMethodError(Exception):
     """Error might be raised during rpc methods processing"""
 
     pass
+
+
+class HeartbeatError(Exception):
+    """Heartbeat error"""
+    pass

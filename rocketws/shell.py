@@ -2,7 +2,10 @@
 import sys
 import os.path as op
 
+
 # PYTHON_PATH project visibility
+from rocketws.exceptions import HeartbeatError
+
 sys.path.append(op.abspath(op.dirname(__file__)) + '/../')
 
 import cmd
@@ -33,10 +36,10 @@ class RocketWSShell(cmd.Cmd):
     intro = "\nWelcome to RocketWS shell! Type `help` for help."
     prompt = '--> '
 
-    def __init__(self):
+    def __init__(self, conn_url=None):
         cmd.Cmd.__init__(self)
         self.last_search_result = None
-        do_heartbeat()
+        self.do_connect(conn_url or CONNECT_URL)
 
     def do_emit(self, line):
         """Emit data to channel"""
@@ -90,7 +93,7 @@ class RocketWSShell(cmd.Cmd):
         global CONNECT_URL
         if re.match(url_regex, line):
             CONNECT_URL = line
-            print('Connect url was updated to {}'.format(line))
+            do_heartbeat()
         else:
             print('Wrong url: {}. Correct example: '
                   'http://domain.com'.format(line))
@@ -209,4 +212,7 @@ def do_heartbeat():
     }
     response = do_request(payload)
     logger.info('heartbeat:ok: {}'.format(response.status_code))
+    if response.status_code != 200:
+        raise HeartbeatError(
+            'Heartbeat is not succeed: {}'.format(response.content))
     return response.content
