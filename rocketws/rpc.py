@@ -8,6 +8,7 @@ There are two type of methods to dispatch:
 import logging
 from jsonrpc import dispatcher as ui_dispatcher, Dispatcher
 from rocketws.exceptions import RPCMethodError
+from rocketws.helpers import log_methods_time
 from rocketws.registry import ChannelRegistry, SocketRegistry
 
 logger = logging.getLogger('jsonrpc:ui')
@@ -43,6 +44,7 @@ def unsubscribe(channel, address):
 
 
 @ui_dispatcher.add_method
+@log_methods_time(logger=logger)
 def send_data(channel, data, address):
     """
 
@@ -82,14 +84,16 @@ def emit(channel, data):
 
 
 @ms_dispatcher.add_method
+@log_methods_time(logger=logger)
 def notify_all(data):
     logger_ms.info('invoke `notify_all` command, args: {}'.format(data))
     return registry.notify_all(data)
 
 
 @ms_dispatcher.add_method
-def get_subscribers(channel=None):
-    logger_ms.info('invoke `get_subscribers` command, args: {}'.format(channel))
+def total_subscribers(channel=None):
+    logger_ms.info(
+        'invoke `total_subscribers` command, args: {}'.format(channel))
 
     if channel is None:
         clients = registry.subscribers

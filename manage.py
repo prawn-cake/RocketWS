@@ -45,8 +45,7 @@ if __name__ == '__main__':
 
     if args.method == 'runserver':
         from rocketws.server import run_server
-        # TODO: add ws/ms host/port propagate from command line, for runserver
-        # like `runserver --ws-conn :58000 --ms-conn :59000`, etc
+
         ws_host, ws_port = None, None
         ms_host, ms_port = None, None
 

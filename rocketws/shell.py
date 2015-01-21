@@ -14,7 +14,7 @@ import requests
 import ujson as json
 
 
-logger = logging.getLogger('registry')
+logger = logging.getLogger('shell')
 CONNECT_URL = 'http://{HOST}:{PORT}/'.format(**settings.MESSAGES_SOURCE)
 
 
@@ -51,7 +51,7 @@ class RocketWSShell(cmd.Cmd):
         )
         print(notify_all(data))
 
-    def do_get_subscribers(self, line):
+    def do_total_subscribers(self, line):
         """Get subscribers information
 
         """
@@ -61,9 +61,9 @@ class RocketWSShell(cmd.Cmd):
             validator=str
         )
         if channel == 'all':
-            print(get_subscribers())
+            print(total_subscribers())
         else:
-            print(get_subscribers(channel))
+            print(total_subscribers(channel))
 
     def do_available_channels(self, line):
         """Get available channels
@@ -148,12 +148,13 @@ def notify_all(data):
         return response.content
 
 
-def get_subscribers(channel=None):
-    logger.debug('get_subscribers for channel `{}`'.format(channel))
+def total_subscribers(channel=None):
+    logger.debug(
+        'getting total_subscribers for a channel `{}`'.format(channel))
     payload = {
         "jsonrpc": "2.0",
         "id": 0,
-        "method": "get_subscribers",
+        "method": "total_subscribers",
         "params": {"channel": channel}
     }
     try:
@@ -164,7 +165,7 @@ def get_subscribers(channel=None):
         logger.error(err)
         print(msg)
     else:
-        logger.info('get_subscribers:ok {}'.format(response.status_code))
+        logger.info('total_subscribers:ok {}'.format(response.status_code))
         return response.content
 
 

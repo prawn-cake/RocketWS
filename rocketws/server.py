@@ -51,7 +51,6 @@ class MainApplication(WebSocketApplication):
 
         message = self._inject_client_address(message)
         response = JSONRPCResponseManager.handle(message, ui_dispatcher)
-        logger.debug('subscribers: {}'.format(registry.subscribers))
 
         # Send response to the client
         self.active_client.ws.send(response.json)

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
-from itertools import chain
 import weakref
 import collections
 import json
+import logging
 
 from rocketws.helpers import Singleton
-import logging
+
 
 logger = logging.getLogger('registry')
 
@@ -142,8 +142,11 @@ class ChannelRegistry(object):
 
         :return: list
         """
-        # TODO: rewrite method to return only active user sessions (clients)
-        return list(chain(*self.registry.values()))
+        subscribers = []
+        for channel in self.registry.keys():
+            active = self._get_active_subscribers_idx(channel)
+            subscribers.extend(active.values())
+        return subscribers
 
     def get_channel_subscribers(self, channel):
         return self._get_active_subscribers_idx(channel).values()
@@ -177,6 +180,9 @@ class ChannelRegistry(object):
         self.registry.clear()
         logger.debug('Flush all for ChannelRegistry')
 
+    def flush_inactive_clients(self):
+        pass
+
     def emit(self, channel, data, ignore_clients=()):
         """Emit json message for all channel clients
 
@@ -207,7 +213,7 @@ class ChannelRegistry(object):
                 client.ws.send(serialized_data)
                 emitted += 1
 
-        logger.debug('Emit:ok')
+        logger.debug('Emit:ok (emitted: {})'.format(emitted))
         return 'emitted: {}'.format(emitted)
 
     def notify_all(self, data):
