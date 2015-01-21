@@ -60,6 +60,10 @@ Command line interface is console for WebSockets clients interaction, this featu
 * Run shell: `make shell`
 * Type `help` for more information
 
+**NOTE:** For remote shell you need to ensure that port for `MESSAGES_SOURCE` is available on a server.
+
+Run remote shell: `python manage.py shell --ms-conn http://rocketws.domain.com:80/shell`
+
 
 Configuration
 --------------
@@ -91,7 +95,7 @@ Options:
 
 * `--settings` - Application settings. Format: `--settings=rocketws.settings.{environment}` Predefined environments: `production`, `default`, `test`. Default: `--settings=rocketws.settings.default`  
 * `--ws-conn`  - WebSockets server connection options. Example: `--ws-conn 0.0.0.0:58000` or `--ws-conn :58000`. Options for `runserver` command. 
-* `--ms-conn`  - MessagesSource connection options. Format is the same as `--ws-conn`. Options for `runserver` command.
+* `--ms-conn`  - MessagesSource connection options. Format is the same as `--ws-conn`. Options for `runserver` and `shell` command.
 
 
 
@@ -103,11 +107,8 @@ Make sure that you have `libevent-2.0-5` or `libev4` in your system.
 ### Develop way
 
 * Get source code: `git clone https://github.com/prawn-cake/RocketWS.git {dir}`
-
 * Setup virtualenv: `cd {dir} && make env`
-
 * Check settings at: `{dir}/rocketws/settings/default.py`
-
 * Run it: `make run` OR `{dir}/manage.py runserver`
 
 **NOTE:** By default `--settings=rocketws.settings.default` will be passed to `manage.py`, you can change it with 
@@ -116,9 +117,7 @@ Make sure that you have `libevent-2.0-5` or `libev4` in your system.
 ### Supervisor way
 
 * Get source code, setup virtualenv and check settings as described above
-
 * Install supervisor: `sudo aptitude install supervisor  # Debian-way`
-
 * Add supervisor config: `sudo vim /etc/supervisor/conf.d/rocketws.conf`
 
 **NOTE:** For production using need to create log directory `/var/log/rocketws` 
@@ -136,7 +135,6 @@ user={str:user}
 ```
 
 * Update supervisor configurations: `sudo supervisorctl reread && sudo supervisorctl update`
-
 * Start RocketWS with: `sudo supervisorctl start rocketws`
 
 
