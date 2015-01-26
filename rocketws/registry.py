@@ -137,7 +137,7 @@ class ChannelRegistry(object):
         """
         data.update(
             __type=cls.MESSAGE_TYPES.get(_type, 'message'),
-            __ts=time.time()
+            __ts=int(time.time())
         )
 
     @property
