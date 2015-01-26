@@ -110,6 +110,19 @@ class ChannelRegistryTestCase(unittest.TestCase):
         self.assertEqual(len(self.registry.subscribers), 1)
         self.assertEqual(len(self.registry.channels), 1)
 
+    def test_flush_dead_clients(self):
+        self.registry.flush_all()
+        channel = 'chat'
+        client_1, client_2 = get_ws_client(), get_ws_client()
+        self.registry.subscribe(channel, client_1, client_2)
+
+        self.assertEqual(len(self.registry.subscribers), 2)
+        self.assertEqual(len(self.registry.channels), 1)  # only chat
+
+        del client_1
+        resp = self.registry.flush_dead_clients()
+        self.assertEqual(resp, {'flushed': 1})
+
 
 class SocketRegistryTestCase(unittest.TestCase):
     def setUp(self):

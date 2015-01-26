@@ -206,8 +206,13 @@ class ChannelRegistry(object):
         """Remove null-references for un-existed clients
 
         """
+        count_clients = lambda: sum([len(v) for v in self.registry.values()])
+        init_count = count_clients()
         for channel in self.registry.keys():
             self.registry[channel] = self._get_active_subscribers_idx(channel)
+        flushed = init_count - count_clients()
+        logger.debug('Flush dead clients. Flushed: {}'.format(flushed))
+        return {'flushed': flushed}
 
     def emit(self, channel, data, ignore_clients=()):
         """Emit json message for all channel clients

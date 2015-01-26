@@ -122,6 +122,12 @@ def available_channels():
 
 
 @ms_dispatcher.add_method
+def flush_dead_clients():
+    logger_ms.info('invoke `flush_dead_clients` command')
+    return registry.flush_dead_clients()
+
+
+@ms_dispatcher.add_method
 def heartbeat():
     """MessagesSource heartbeat
 
