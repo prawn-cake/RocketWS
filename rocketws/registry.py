@@ -4,6 +4,7 @@ import weakref
 import collections
 import json
 import logging
+import time
 
 from rocketws.helpers import Singleton
 
@@ -124,13 +125,20 @@ class ChannelRegistry(object):
         return active_clients_idx
 
     @classmethod
-    def _add_message_type(cls, data, _type):
+    def _add_message_meta(cls, data, _type):
         """Helper method to add meta info for message
 
         :param data:
         :param _type:
+
+        Meta information:
+            __type  - optional message type, default is 'message'
+            __ts    - message server timestamp
         """
-        data.update(__type=cls.MESSAGE_TYPES[_type])
+        data.update(
+            __type=cls.MESSAGE_TYPES.get(_type, 'message'),
+            __ts=time.time()
+        )
 
     @property
     def channels(self):
@@ -181,6 +189,7 @@ class ChannelRegistry(object):
         logger.debug('Flush all for ChannelRegistry')
 
     def flush_inactive_clients(self):
+        # TODO
         pass
 
     def emit(self, channel, data, ignore_clients=()):
@@ -200,7 +209,7 @@ class ChannelRegistry(object):
             raise ValueError(
                 'emit: passed data is not a dict-like: {}'.format(data))
 
-        self._add_message_type(data, 'message')
+        self._add_message_meta(data, 'message')
         serialized_data = json.dumps(data)
         subscribers = self.get_channel_subscribers(channel)
 
@@ -226,7 +235,7 @@ class ChannelRegistry(object):
             raise ValueError(
                 'notify_all: passed data is not dict-like: {}'.format(data))
 
-        self._add_message_type(data, 'broadcast')
+        self._add_message_meta(data, 'broadcast')
         logger.debug('Notify all with data {}'.format(data))
         serialized_data = json.dumps(data)
 
