@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
-from itertools import chain
 import weakref
 import collections
 import json
+import logging
+import time
 
 from rocketws.helpers import Singleton
-import logbook
 
-logger = logbook.Logger('registry')
+
+logger = logging.getLogger('registry')
 
 
 class SocketRegistry(object):
@@ -124,13 +125,20 @@ class ChannelRegistry(object):
         return active_clients_idx
 
     @classmethod
-    def _add_message_type(cls, data, _type):
+    def _add_message_meta(cls, data, _type):
         """Helper method to add meta info for message
 
         :param data:
         :param _type:
+
+        Meta information:
+            __type  - optional message type, default is 'message'
+            __ts    - message server timestamp
         """
-        data.update(__type=cls.MESSAGE_TYPES[_type])
+        data.update(
+            __type=cls.MESSAGE_TYPES.get(_type, 'message'),
+            __ts=time.time()
+        )
 
     @property
     def channels(self):
@@ -142,8 +150,11 @@ class ChannelRegistry(object):
 
         :return: list
         """
-        # TODO: rewrite method to return only active user sessions (clients)
-        return list(chain(*self.registry.values()))
+        subscribers = []
+        for channel in self.registry.keys():
+            active = self._get_active_subscribers_idx(channel)
+            subscribers.extend(active.values())
+        return subscribers
 
     def get_channel_subscribers(self, channel):
         return self._get_active_subscribers_idx(channel).values()
@@ -177,6 +188,10 @@ class ChannelRegistry(object):
         self.registry.clear()
         logger.debug('Flush all for ChannelRegistry')
 
+    def flush_inactive_clients(self):
+        # TODO
+        pass
+
     def emit(self, channel, data, ignore_clients=()):
         """Emit json message for all channel clients
 
@@ -194,7 +209,7 @@ class ChannelRegistry(object):
             raise ValueError(
                 'emit: passed data is not a dict-like: {}'.format(data))
 
-        self._add_message_type(data, 'message')
+        self._add_message_meta(data, 'message')
         serialized_data = json.dumps(data)
         subscribers = self.get_channel_subscribers(channel)
 
@@ -207,7 +222,7 @@ class ChannelRegistry(object):
                 client.ws.send(serialized_data)
                 emitted += 1
 
-        logger.debug('Emit:ok')
+        logger.debug('Emit:ok (emitted: {})'.format(emitted))
         return 'emitted: {}'.format(emitted)
 
     def notify_all(self, data):
@@ -220,7 +235,7 @@ class ChannelRegistry(object):
             raise ValueError(
                 'notify_all: passed data is not dict-like: {}'.format(data))
 
-        self._add_message_type(data, 'broadcast')
+        self._add_message_meta(data, 'broadcast')
         logger.debug('Notify all with data {}'.format(data))
         serialized_data = json.dumps(data)
 

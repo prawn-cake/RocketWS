@@ -9,10 +9,10 @@ except ImportError as err:
     raise ImproperlyConfigured('Error loading flask module: {}'.format(err))
 else:
     from flask import request
-import logbook
+import logging
 
 
-logger = logbook.Logger('ms:http')
+logger = logging.getLogger('ms:http')
 
 
 class HTTPMessagesSource(BaseMessagesSource):

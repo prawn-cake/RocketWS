@@ -14,14 +14,19 @@ import importlib
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 from rocketws.exceptions import ImproperlyConfigured
 from jsonrpc import JSONRPCResponseManager
-import settings
-import logbook
+from rocketws.conf import get_settings
+settings = get_settings()
+
+import logging
+import logging.config
+logging.config.dictConfig(settings.LOGGING)
+
 from rocketws.rpc import (
     registry, socket_registry, ui_dispatcher, ms_dispatcher
 )
 
 
-logger = logbook.Logger('server')
+logger = logging.getLogger('server')
 
 
 class MainApplication(WebSocketApplication):
@@ -46,7 +51,6 @@ class MainApplication(WebSocketApplication):
 
         message = self._inject_client_address(message)
         response = JSONRPCResponseManager.handle(message, ui_dispatcher)
-        logger.debug('subscribers: {}'.format(registry.subscribers))
 
         # Send response to the client
         self.active_client.ws.send(response.json)
@@ -86,7 +90,7 @@ resources = Resource({
 })
 
 
-def get_configured_messages_source(name=None):
+def get_configured_messages_source(name=None, host=None, port=None):
     """Dynamic import for messages source
 
     :return: BaseMessagesSource implementation instance
@@ -110,21 +114,31 @@ def get_configured_messages_source(name=None):
         response = JSONRPCResponseManager.handle(raw_message, ms_dispatcher)
         return response.data
 
+    if host:
+        settings.MESSAGES_SOURCE.update(HOST=host)
+    if port:
+        settings.MESSAGES_SOURCE.update(PORT=port)
+
     source = source_cls(on_message_callback, **settings.MESSAGES_SOURCE)
     logger.debug('Configure messages source `{}`'.format(
         name or settings.MESSAGES_SOURCE['ADAPTER']))
     return source
 
 
-if __name__ == '__main__':
+def run_server(ws_host=None, ws_port=None, ms_host=None, ms_port=None):
+    """Application run method
+
+    """
     logger.info('Starting all services')
     server = WebSocketServer(
-        (settings.WEBSOCKETS['HOST'], settings.WEBSOCKETS['PORT']),
+        (ws_host or settings.WEBSOCKETS['HOST'],
+         ws_port or settings.WEBSOCKETS['PORT']),
         resources,
         debug=settings.WEBSOCKETS['DEBUG']
     )
     server.environ['SERVER_SOFTWARE'] = ''
-    messages_source = get_configured_messages_source()
+    messages_source = get_configured_messages_source(
+        host=ms_host, port=ms_port)
     try:
         messages_source.start()
         logger.info('Starting WebSocketServer on: {}'.format(server.address))

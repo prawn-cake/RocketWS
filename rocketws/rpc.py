@@ -5,12 +5,13 @@ There are two type of methods to dispatch:
     * ms_dispatch rpc methods are defined for messages sources handlers
 """
 
-import logbook
+import logging
 from jsonrpc import dispatcher as ui_dispatcher, Dispatcher
 from rocketws.exceptions import RPCMethodError
+from rocketws.helpers import log_methods_time
 from rocketws.registry import ChannelRegistry, SocketRegistry
 
-logger = logbook.Logger('jsonrpc:ui')
+logger = logging.getLogger('jsonrpc:ui')
 
 registry = ChannelRegistry()
 socket_registry = SocketRegistry()
@@ -43,8 +44,15 @@ def unsubscribe(channel, address):
 
 
 @ui_dispatcher.add_method
+@log_methods_time(logger=logger)
 def send_data(channel, data, address):
-    # TODO: rename the method
+    """
+
+    :param channel:
+    :param data:
+    :param address: is injected automatically
+    :return: :raise RPCMethodError:
+    """
     logger.info('invoke `send_data` command, args: {}'.format(
         (channel, address)))
     client = socket_registry.get_client(address)
@@ -54,15 +62,25 @@ def send_data(channel, data, address):
         logger.error('Error: {}; Data: {}'.format(msg, data))
         raise RPCMethodError(msg)
 
-    # FIXME: think about whether we need to omit send message for sender or not
-    # return registry.emit(channel, data, ignore_clients=(client.address, ))
+    return registry.emit(channel, data, ignore_clients=(client.address, ))
 
-    return registry.emit(channel, data)
+
+@ui_dispatcher.add_method
+def heartbeat(address):
+    """UI heartbeat
+
+    :return:
+    """
+    len_clients = len(socket_registry.clients)
+    len_channels = len(registry.channels)
+    logger_ms.info('heartbeat from `{}`:ok (clients={}; channels='
+                   '{}))'.format(address, len_clients, len_channels))
+    return {'heartbeat': 'ok'}
 
 
 # MessagesSources
 
-logger_ms = logbook.Logger('jsonrpc:ms')
+logger_ms = logging.getLogger('jsonrpc:ms')
 
 
 @ms_dispatcher.add_method
@@ -79,14 +97,16 @@ def emit(channel, data):
 
 
 @ms_dispatcher.add_method
+@log_methods_time(logger=logger)
 def notify_all(data):
     logger_ms.info('invoke `notify_all` command, args: {}'.format(data))
     return registry.notify_all(data)
 
 
 @ms_dispatcher.add_method
-def get_subscribers(channel=None):
-    logger_ms.info('invoke `get_subscribers` command, args: {}'.format(channel))
+def total_subscribers(channel=None):
+    logger_ms.info(
+        'invoke `total_subscribers` command, args: {}'.format(channel))
 
     if channel is None:
         clients = registry.subscribers
@@ -99,3 +119,13 @@ def get_subscribers(channel=None):
 def available_channels():
     logger_ms.info('invoke `available_channels` command')
     return registry.channels
+
+
+@ms_dispatcher.add_method
+def heartbeat():
+    """MessagesSource heartbeat
+
+    :return:
+    """
+    logger_ms.info('heartbeat:ok')
+    return {'heartbeat': 'ok'}

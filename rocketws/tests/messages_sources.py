@@ -42,6 +42,25 @@ class HttpMessagesSourceTestCase(unittest.TestCase):
         source.stop()
         self.assertFalse(source.started)
 
+    def test_heartbeat(self):
+        source = get_configured_messages_source(self.source_name)
+        source.start()
+        self.assertTrue(source.started)
+
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 0,
+            "method": "heartbeat"
+        }
+
+        url = 'http://localhost:{}/'.format(source.server.server_port)
+        response = requests.post(url, json=payload)
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertIn("{'heartbeat': 'ok'}", response.content)
+
+        source.stop()
+        self.assertFalse(source.started)
+
 
 # class RabbitMQMessagesSourceTestCase(unittest.TestCase):
 #     def setUp(self):
