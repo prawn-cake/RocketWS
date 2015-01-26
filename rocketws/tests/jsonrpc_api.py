@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import json
 import unittest
+
 from jsonrpc import JSONRPCResponseManager
 from jsonrpc.jsonrpc2 import JSONRPC20Request
 from rocketws.registry import SocketRegistry
