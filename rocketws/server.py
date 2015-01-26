@@ -34,13 +34,12 @@ class MainApplication(WebSocketApplication):
 
     def on_open(self, *args, **kwargs):
         logger.debug('On open: {}'.format(self.clients))
-        logger.debug('Active client: {}'.format(self.active_client))
-
+        logger.debug('Active client: {}'.format(self.active_client.address))
         socket_registry.register(self.active_client)
 
     def on_close(self, *args, **kwargs):
         logger.debug('On close: {}'.format(self.clients))
-        logger.debug('Active client: {}'.format(self.active_client))
+        logger.debug('Active client: {}'.format(self.active_client.address))
         socket_registry.unregister(self.active_client)
         logger.debug('subscribers: {}'.format(registry.subscribers))
 
@@ -84,6 +83,9 @@ class MainApplication(WebSocketApplication):
 
 # TODO: think about implementation of multiple resources and auto-configuring it
 # --> implement own registry and socket registry for each WebSocketsApplication
+
+# TODO: implement so-called garbage collector for dead subscribers to remove
+# null-references automatically
 
 resources = Resource({
     settings.WEBSOCKETS['LOCATION']: MainApplication

@@ -4,10 +4,6 @@ from rocketws.registry import ChannelRegistry, SocketRegistry
 from rocketws.tests import get_ws_client
 
 
-if __name__ == '__main__':
-    pass
-
-
 class ChannelRegistryTestCase(unittest.TestCase):
     def setUp(self):
         self.registry = ChannelRegistry()
@@ -80,6 +76,39 @@ class ChannelRegistryTestCase(unittest.TestCase):
             self.assertIn('"__ts":', str_call)
             # client.ws.send.assert_called_once_with(
             #     '{"message": "test", "__type": "broadcast"}')
+
+    def test_unsubscribe(self):
+        self.registry.flush_all()
+        channel = 'chat'
+        client_1 = get_ws_client()
+        client_2 = get_ws_client()
+        self.registry.subscribe(channel, client_1, client_2)
+
+        self.assertEqual(len(self.registry.subscribers), 2)
+        self.assertEqual(len(self.registry.channels), 1)  # only chat
+
+        self.registry.unsubscribe(channel, client_1)
+        self.assertEqual(len(self.registry.subscribers), 1)
+        self.assertEqual(len(self.registry.channels), 1)
+
+        self.registry.unsubscribe(channel, client_2)
+        self.assertEqual(len(self.registry.subscribers), 0)
+        self.assertEqual(len(self.registry.channels), 0)
+
+    def test_channels_property(self):
+        self.registry.flush_all()
+        channel_1, channel_2 = 'chat_1', 'chat_2'
+        client_1, client_2 = get_ws_client(), get_ws_client()
+
+        self.registry.subscribe(channel_1, client_1)
+        self.registry.subscribe(channel_2, client_2)
+
+        self.assertEqual(len(self.registry.subscribers), 2)
+        self.assertEqual(len(self.registry.channels), 2)
+
+        del client_1
+        self.assertEqual(len(self.registry.subscribers), 1)
+        self.assertEqual(len(self.registry.channels), 1)
 
 
 class SocketRegistryTestCase(unittest.TestCase):

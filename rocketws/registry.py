@@ -24,9 +24,11 @@ class SocketRegistry(object):
 
     def register(self, *clients):
         for client in clients:
+            logger.debug('Register client: {}'.format(client.address))
             self.registry[client.address] = weakref.ref(client)
 
     def unregister(self, client):
+        logger.debug('Unregister client: {}'.format(client.address))
         if client.address in self.registry:
             del self.registry[client.address]
         return True
@@ -142,7 +144,14 @@ class ChannelRegistry(object):
 
     @property
     def channels(self):
-        return self.registry.keys()
+        active_channels = []
+        for channel, subscribers in self.registry.items():
+            try:
+                all(subscribers)
+            except ReferenceError:
+                continue
+            active_channels.append(channel)
+        return active_channels
 
     @property
     def subscribers(self):
@@ -157,6 +166,11 @@ class ChannelRegistry(object):
         return subscribers
 
     def get_channel_subscribers(self, channel):
+        """Get alive subscribers for particular channel
+
+        :param channel: channel name
+        :return:
+        """
         return self._get_active_subscribers_idx(channel).values()
 
     def is_client_in_channel(self, client, channel):
@@ -188,9 +202,12 @@ class ChannelRegistry(object):
         self.registry.clear()
         logger.debug('Flush all for ChannelRegistry')
 
-    def flush_inactive_clients(self):
-        # TODO
-        pass
+    def flush_dead_clients(self):
+        """Remove null-references for un-existed clients
+
+        """
+        for channel in self.registry.keys():
+            self.registry[channel] = self._get_active_subscribers_idx(channel)
 
     def emit(self, channel, data, ignore_clients=()):
         """Emit json message for all channel clients
