@@ -73,8 +73,13 @@ class ChannelRegistryTestCase(unittest.TestCase):
         for client in client_1, client_2, client_3:
             # mock for send method is injected in get_ws_client
             # message type will be added automatically
-            client.ws.send.assert_called_once_with(
-                '{"message": "test", "__type": "broadcast"}')
+            self.assertEqual(client.ws.send.call_count, 1)
+            str_call = str(client.ws.send.call_args_list[0])
+            self.assertIn('"message": "test"', str_call)
+            self.assertIn('"__type": "broadcast"}', str_call)
+            self.assertIn('"__ts":', str_call)
+            # client.ws.send.assert_called_once_with(
+            #     '{"message": "test", "__type": "broadcast"}')
 
 
 class SocketRegistryTestCase(unittest.TestCase):

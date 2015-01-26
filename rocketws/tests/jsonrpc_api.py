@@ -63,8 +63,11 @@ class JSONRPCWebSocketsApiTestCase(unittest.TestCase):
         for client in client_1, client_2, client_3:
             # mock for send method is injected in get_ws_client
             # message type will be added automatically
-            client.ws.send.assert_called_once_with(
-                '{"message": "test", "__type": "message"}')
+            self.assertEqual(client.ws.send.call_count, 1)
+            str_call = str(client.ws.send.call_args_list[0])
+            self.assertIn('"message": "test"', str_call)
+            self.assertIn('"__type": "message"}', str_call)
+            self.assertIn('"__ts":', str_call)
 
     def test_send_data(self):
         """Test ui send_data.
@@ -94,10 +97,12 @@ class JSONRPCWebSocketsApiTestCase(unittest.TestCase):
         # only client 2 receives a message
         for client in client_2, :
             # mock for send method is injected in get_ws_client
-            params = json.dumps({
-                "message": "test", "type": "my_type", "__type": "message"
-            })
-            client.ws.send.assert_called_once_with(params)
+            self.assertEqual(client.ws.send.call_count, 1)
+            str_call = str(client.ws.send.call_args_list[0])
+            self.assertIn('"message": "test"', str_call)
+            self.assertIn('"__type": "message"}', str_call)
+            self.assertIn('"type": "my_type"', str_call)
+            self.assertIn('"__ts":', str_call)
 
         # Not subscribed client3 send message to `chat`, expected an error
         client_3 = get_ws_client()
