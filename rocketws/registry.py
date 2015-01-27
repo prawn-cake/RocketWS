@@ -93,6 +93,8 @@ class ChannelRegistry(object):
         active_subscribers = self._get_active_subscribers_idx(channel)
 
         for client in clients:
+            ch_logger.debug('Subscribe client {} on channel {}'.format(
+                client.address, channel))
             # Store each client as a proxy weak reference
             active_subscribers.update({client.address: weakref.proxy(client)})
         self.registry[channel] = active_subscribers.values()
@@ -101,11 +103,15 @@ class ChannelRegistry(object):
     def unsubscribe(self, channel, *clients):
         active_subscribers = self._get_active_subscribers_idx(channel)
         for client in clients:
+            ch_logger.debug('Unsubscribe client {} on channel `{}`'.format(
+                client.address, channel))
             if client.address in active_subscribers:
                 del active_subscribers[client.address]
 
         # Remove channel from registry if there are no subscribers
         if not active_subscribers:
+            ch_logger.debug('There are no active subscribers for channel `{}`. '
+                            'Remove it from registry.'.format(channel))
             del self.registry[channel]
         else:
             self.registry[channel] = active_subscribers.values()
