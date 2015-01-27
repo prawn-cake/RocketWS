@@ -9,7 +9,7 @@ import time
 from rocketws.helpers import Singleton
 
 
-logger = logging.getLogger('registry')
+logger = logging.getLogger('SocketRegistry')
 
 
 class SocketRegistry(object):
@@ -20,7 +20,7 @@ class SocketRegistry(object):
 
     def __init__(self):
         self.registry = dict()
-        logger.debug('Init SocketRegistry')
+        logger.debug('Init')
 
     def register(self, *clients):
         for client in clients:
@@ -50,7 +50,7 @@ class SocketRegistry(object):
 
     def flush(self):
         self.registry.clear()
-        logger.debug('Flush for SocketRegistry')
+        logger.debug('Flush registry')
 
     def __unicode__(self):
         return unicode(
@@ -61,6 +61,9 @@ class SocketRegistry(object):
         return unicode(
             "{}(sockets={})".format(
                 self.__class__.__name__, len(self.registry)))
+
+
+ch_logger = logging.getLogger('ChannelRegistry')
 
 
 class ChannelRegistry(object):
@@ -76,7 +79,7 @@ class ChannelRegistry(object):
 
     def __init__(self, **kwargs):
         self.registry = defaultdict(list)
-        logger.debug('Init ChannelRegistry')
+        ch_logger.debug('Initialized')
 
     def subscribe(self, channel, *clients):
         """Subscribe client for a channel.
@@ -200,7 +203,7 @@ class ChannelRegistry(object):
 
         """
         self.registry.clear()
-        logger.debug('Flush all for ChannelRegistry')
+        ch_logger.debug('Flush all')
 
     def flush_dead_clients(self):
         """Remove null-references for un-existed clients
@@ -211,7 +214,7 @@ class ChannelRegistry(object):
         for channel in self.registry.keys():
             self.registry[channel] = self._get_active_subscribers_idx(channel)
         flushed = init_count - count_clients()
-        logger.debug('Flush dead clients. Flushed: {}'.format(flushed))
+        ch_logger.debug('Flush dead clients. Flushed: {}'.format(flushed))
         return {'flushed': flushed}
 
     def emit(self, channel, data, ignore_clients=()):
@@ -224,7 +227,7 @@ class ChannelRegistry(object):
 
         :raise ValueError:
         """
-        logger.debug(
+        ch_logger.debug(
             'Emit data `{}` for channel `{}` (ignore: {})'.format(
                 data, channel, ignore_clients))
         if not isinstance(data, collections.Mapping):
@@ -235,7 +238,7 @@ class ChannelRegistry(object):
         serialized_data = json.dumps(data)
         subscribers = self.get_channel_subscribers(channel)
 
-        logger.debug(
+        ch_logger.debug(
             'Channel contains {} subscribers'.format(len(subscribers)))
 
         emitted = 0
@@ -244,7 +247,7 @@ class ChannelRegistry(object):
                 client.ws.send(serialized_data)
                 emitted += 1
 
-        logger.debug('Emit:ok (emitted: {})'.format(emitted))
+        ch_logger.debug('Emit:ok (emitted: {})'.format(emitted))
         return 'emitted: {}'.format(emitted)
 
     def notify_all(self, data):
@@ -258,14 +261,14 @@ class ChannelRegistry(object):
                 'notify_all: passed data is not dict-like: {}'.format(data))
 
         self._add_message_meta(data, 'broadcast')
-        logger.debug('Notify all with data {}'.format(data))
+        ch_logger.debug('Notify all with data {}'.format(data))
         serialized_data = json.dumps(data)
 
         notified = 0
         for client in self.subscribers:
             client.ws.send(serialized_data)
             notified += 1
-        logger.debug('Notify all:ok')
+        ch_logger.debug('Notify all:ok')
 
         return 'notified: {}'.format(notified)
 

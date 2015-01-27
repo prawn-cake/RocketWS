@@ -36,13 +36,15 @@ class MainApplication(WebSocketApplication):
         logger.debug('On open connection for {}'.format(
             self.active_client.address))
         socket_registry.register(self.active_client)
-        logger.debug('total subscribers: {}'.format(len(registry.subscribers)))
+        logger.debug('total sockets={}; total subscribers={}'.format(
+            len(socket_registry.clients), len(registry.subscribers)))
 
     def on_close(self, *args, **kwargs):
         logger.debug('On close connection for {}'.format(
             self.active_client.address))
         socket_registry.unregister(self.active_client)
-        logger.debug('total subscribers: {}'.format(len(registry.subscribers)))
+        logger.debug('total sockets={}; total subscribers={}'.format(
+            len(socket_registry.clients), len(registry.subscribers)))
 
     def on_message(self, message, *args, **kwargs):
         logger.debug('on message: {}, {}, {}'.format(message, args, kwargs))
