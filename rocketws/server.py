@@ -33,15 +33,16 @@ class MainApplication(WebSocketApplication):
     # NOTE: access to all clients self.ws.handler.server.clients.values()
 
     def on_open(self, *args, **kwargs):
-        logger.debug('On open: {}'.format(self.clients))
-        logger.debug('Active client: {}'.format(self.active_client.address))
+        logger.debug('On open connection for {}'.format(
+            self.active_client.address))
         socket_registry.register(self.active_client)
+        logger.debug('total subscribers: {}'.format(len(registry.subscribers)))
 
     def on_close(self, *args, **kwargs):
-        logger.debug('On close: {}'.format(self.clients))
-        logger.debug('Active client: {}'.format(self.active_client.address))
+        logger.debug('On open connection for {}'.format(
+            self.active_client.address))
         socket_registry.unregister(self.active_client)
-        logger.debug('subscribers: {}'.format(registry.subscribers))
+        logger.debug('total subscribers: {}'.format(len(registry.subscribers)))
 
     def on_message(self, message, *args, **kwargs):
         logger.debug('on message: {}, {}, {}'.format(message, args, kwargs))
