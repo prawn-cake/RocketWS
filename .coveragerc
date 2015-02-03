@@ -21,6 +21,8 @@ exclude_lines =
 
 include =
     rocketws/*
+omit =
+    rocketws/shell.py
 
 ignore_errors = True
 
