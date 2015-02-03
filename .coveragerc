@@ -23,6 +23,9 @@ include =
     rocketws/*
 omit =
     rocketws/shell.py
+    rocketws/messages_sources/rabbitmq.py
+    rocketws/tests/websocket_client.py
+    rocketws/settings/*
 
 ignore_errors = True
 
