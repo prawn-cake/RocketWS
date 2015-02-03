@@ -1,6 +1,7 @@
 # System variables
 ENV_DIR=$(CURDIR)/.env
 PYTHON=$(ENV_DIR)/bin/python
+COVERAGE=$(ENV_DIR)/bin/coverage
 
 PROJECT=rocketws
 DOCKER_IMAGE=prawncake/rocketws
@@ -36,6 +37,10 @@ test: env
 # target: test - Run tests
 	@$(PYTHON) manage.py tests
 
+.PHONY: test_coverage
+test_coverage: env
+# target: test_coverage - Run tests with coverage
+	@$(COVERAGE) run --source=rocketws manage.py tests
 
 .PHONY: pull_image
 pull_image:

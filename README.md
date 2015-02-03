@@ -142,6 +142,7 @@ user={str:user}
 **NOTE:** Docker works fine (without any workarounds) only under x86_64 arch (based on my tests)
 
 * [Install docker](https://docs.docker.com/installation/ubuntulinux/)
+* Add `DOCKER_OPTS="--ip 127.0.0.1"` to `/etc/default/docker` (or `/etc/sysconfig/docker` for RHEL) and restart the docker service
 
 **NOTE:** use `sudo` with the following commands or add your user to a docker group
 
