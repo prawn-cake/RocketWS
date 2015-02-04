@@ -178,3 +178,4 @@ Useful for production
 * [Nginx websocket proxying article](http://nginx.org/en/docs/http/websocket.html)
 
 * Add custom `proxy_read_timeout`, because it equals 60s by default, `proxy_read_timeout 604800;  # one-week timeout;` for example
+**NOTE:** If you use `https` with **self-signatured** certificate you must use `wss://` schema firstly and before connect you must first visit a regular html page with that certificate so you can accept it.
