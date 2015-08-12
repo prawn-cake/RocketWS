@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rocketws.server import MainApplication
-from mock import MagicMock
+from rocketws.server import MainApplication, run_server
+from mock import MagicMock, patch
 from rocketws.tests import get_ws_client
 from rocketws.registry import SocketRegistry
 
@@ -30,3 +30,10 @@ class MainApplicationTest(unittest.TestCase):
     def test_on_message(self):
         # TODO: to implement
         pass
+
+    @patch('rocketws.messages_sources.http.HTTPMessagesSource.start')
+    @patch('gevent.pywsgi.WSGIServer.serve_forever')
+    def test_run_server(self, mock_serve, mock_ms_start):
+        run_server()
+        self.assertTrue(mock_serve.called)
+        self.assertTrue(mock_ms_start.called)

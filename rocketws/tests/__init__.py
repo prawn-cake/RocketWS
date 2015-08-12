@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from rocketws.tests.base import *
-from rocketws.tests.messages_sources import *
-from rocketws.tests.registry import *
-from rocketws.tests.jsonrpc_api import *
-from rocketws.tests.server import *
+from rocketws.tests.test_base import *
+from rocketws.tests.test_messages_sources import *
+from rocketws.tests.test_registry import *
+from rocketws.tests.test_jsonrpc_api import *
+from rocketws.tests.test_server import *
 from rocketws.tests.test_shell import *
