@@ -43,7 +43,7 @@ test: requirements-test.txt
 	@$(PYTHON) manage.py tests
 
 .PHONY: test_coverage
-test_coverage: env
+test_coverage: requirements-test.txt
 # target: test_coverage - Run tests with coverage
 	@$(COVERAGE) run --source=rocketws manage.py tests
 
