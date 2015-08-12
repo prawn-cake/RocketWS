@@ -14,8 +14,7 @@ import importlib
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 from rocketws.exceptions import ImproperlyConfigured
 from jsonrpc import JSONRPCResponseManager
-from rocketws.conf import get_settings
-settings = get_settings()
+from rocketws.settings import default as settings
 
 import logging
 import logging.config

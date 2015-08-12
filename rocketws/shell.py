@@ -10,8 +10,7 @@ sys.path.append(op.abspath(op.dirname(__file__)) + '/../')
 
 import cmd
 import logging
-from rocketws.conf import get_settings
-settings = get_settings()
+from rocketws.settings import default as settings
 
 import requests
 import ujson as json
@@ -146,7 +145,7 @@ def do_request(json_payload):
         response = requests.post(CONNECT_URL, json=json_payload)
     except requests.exceptions.ConnectionError as err:
         msg = 'Connection error to `{}`, ' \
-              'check RocketWS is running'.format(CONNECT_URL)
+              'check that RocketWS is started'.format(CONNECT_URL)
         logger.error(err)
         raise requests.exceptions.ConnectionError(msg)
     return response

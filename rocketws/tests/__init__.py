@@ -5,3 +5,4 @@ from rocketws.tests.messages_sources import *
 from rocketws.tests.registry import *
 from rocketws.tests.jsonrpc_api import *
 from rocketws.tests.server import *
+from rocketws.tests.test_shell import *

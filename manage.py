@@ -18,11 +18,7 @@ if __name__ == '__main__':
         type=str,
         choices=['runserver', 'tests', 'shell']
     )
-    parser.add_argument(
-        '--settings',
-        help='Set settings, for example: rocketws.settings.test',
-        type=str
-    )
+
     # parser.add_argument('--log', help='Set log path', type=str)
 
     parser.add_argument(
@@ -38,11 +34,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    from rocketws.conf import configure_settings
-
-    settings_path = args.settings or 'rocketws.settings.default'
-    print('\n--> Configuring settings: {}\n'.format(settings_path))
-    configure_settings(settings_path)
+    from rocketws.settings import default as settings
 
     if args.method == 'runserver':
         from rocketws.server import run_server
@@ -58,6 +50,9 @@ if __name__ == '__main__':
                 print('\nERROR: Wrong WebSockets server port value: '
                       '{}'.format(ws_port))
                 sys.exit(99)
+            else:
+                settings.WEBSOCKETS['HOST'] = ws_host
+                settings.WEBSOCKETS['PORT'] = ws_port
         if args.ms_conn:
             ms_host, ms_port = args.ms_conn.split(':')
             try:
@@ -66,6 +61,9 @@ if __name__ == '__main__':
                 print('\nERROR: Wrong MessagesSource port value: '
                       '{}'.format(ms_port))
                 sys.exit(99)
+            else:
+                settings.MESSAGES_SOURCE['HOST'] = ms_host
+                settings.MESSAGES_SOURCE['PORT'] = ms_port
 
         run_server(
             ws_host=ws_host, ws_port=ws_port, ms_host=ms_host, ms_port=ms_port)

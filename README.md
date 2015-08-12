@@ -52,10 +52,11 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
   * **Notify all** subscribers (some system messages): `{"id": 0, "jsonrpc": "2.0", "method": "notify_all", "params": {"data": {"message": "Broadcase system message"}}}`
 
 
-Command line interface
+Command line interface (RocketWS shell)
 -----------------------
 
 Command line interface is console for WebSockets clients interaction, this feature emulate MessagesSource connector with console.
+So you will be able to emulate backend client to send messages to websockets clients
 
 * Run shell: `make shell`
 * Type `help` for more information
@@ -67,7 +68,6 @@ Run remote shell: `python manage.py shell --ms-conn http://rocketws.domain.com:8
 
 Configuration
 --------------
-Main settings files are stored as `rocketws/settings/{environment}.py`
 
 Common and recommended settings are already predefined.
 Otherwise you can configure it with `manage.py` command. See more information in Management section.
@@ -93,9 +93,8 @@ Commands:
 
 Options:
 
-* `--settings` - Application settings. Format: `--settings=rocketws.settings.{environment}` Predefined environments: `production`, `default`, `test`. Default: `--settings=rocketws.settings.default`  
 * `--ws-conn`  - WebSockets server connection options. Example: `--ws-conn 0.0.0.0:58000` or `--ws-conn :58000`. Options for `runserver` command. 
-* `--ms-conn`  - MessagesSource connection options. Format is the same as `--ws-conn`. Options for `runserver` and `shell` command.
+* `--ms-conn`  - MessagesSource connection options. Example: `--ms-conn 0.0.0.0:59999`. Options for `runserver` and `shell` command.
 
 
 
@@ -106,40 +105,35 @@ Make sure that you have `libevent-2.0-5` or `libev4` in your system.
 
 ### Develop way
 
-* Get source code: `git clone https://github.com/prawn-cake/RocketWS.git {dir}`
-* Setup virtualenv: `cd {dir} && make env`
-* Check settings at: `{dir}/rocketws/settings/default.py`
-* Run it: `make run` OR `{dir}/manage.py runserver`
+* Clone repo: `git clone https://github.com/prawn-cake/RocketWS.git {dir}`
+* Run it: `make run`
 
-**NOTE:** By default `--settings=rocketws.settings.default` will be passed to `manage.py`, you can change it with 
-`make run SETTINGS=rocketws.settings.production` OR `{dir}/manage.py runserver --settings=rocketws.settings.production`
 
 ### Supervisor way
 
-* Get source code, setup virtualenv and check settings as described above
-* Install supervisor: `sudo aptitude install supervisor  # Debian-way`
+* Clone repo: `git clone https://github.com/prawn-cake/RocketWS.git {dir}`
+* Install supervisor: `sudo aptitude install supervisor` (Debian-way)
 * Add supervisor config: `sudo vim /etc/supervisor/conf.d/rocketws.conf`
 
 **NOTE:** For production using need to create log directory `/var/log/rocketws` 
 
 ```
-[program:rocketws]
-# For development
-command={dir}/.env/bin/python {dir}/manage.py runserver
-# For production recommended
-# command={dir}/.env/bin/python {dir}/manage.py runserver --settings=rocketws.settings.production
-autostart=false
-autorestart=true
-user={str:user}
-# stdout_logfile=/tmp/rocketws.log
+
+    [program:rocketws]
+    command={dir}/.env/bin/python {dir}/manage.py runserver --ws-conn 0.0.0.0:58000 --ms-conn 0.0.0.0:59999
+    autostart=false
+    autorestart=true
+    user={str:user}
+    stdout_logfile=/{path_to_log_dir}/rocketws.log
+    
 ```
 
 * Update supervisor configurations: `sudo supervisorctl reread && sudo supervisorctl update`
-* Start RocketWS with: `sudo supervisorctl start rocketws`
+* Start RocketWS with: `sudo supervisorctl restart rocketws`
 
 
 ### Docker way
-**NOTE:** Docker works fine (without any workarounds) only under x86_64 arch (based on my tests)
+**NOTE:** Docker works fine (without any workarounds) only under x86_64 arch
 
 * [Install docker](https://docs.docker.com/installation/ubuntulinux/)
 * Add `DOCKER_OPTS="--ip 127.0.0.1"` to `/etc/default/docker` (or `/etc/sysconfig/docker` for RHEL) and restart the docker service
@@ -148,7 +142,7 @@ user={str:user}
 
 * `docker pull prawncake/rocketws`
 * `docker run --name rocketws -it -p 58000:58000 -p 59999:59999 prawncake/rocketws /bin/bash`
-* You will be attached to the container, run application in the background with `make run_bg SETTINGS=rocketws.settings.production`
+* You will be attached to the container, run application in the background with `make run_bg`
 * Detach from the container with `Ctrl+p Ctrl+q`
 
 *NOTE:* For some reasons docket can't run `nohup`, `disown`, `&` shell instructions from command line or within Makefile commands

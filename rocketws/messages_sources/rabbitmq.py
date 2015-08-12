@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+DEPRECATED MODULE
 Async rmq abstract manager
 https://pika.readthedocs.org/en/latest/examples/asynchronous_consumer_example.html # noqa
 
@@ -9,6 +10,7 @@ from rocketws.exceptions import ImproperlyConfigured
 import gevent
 from rocketws.messages_sources.base import BaseMessagesSourceAsync
 import logging
+import warnings
 
 try:
     import pika
@@ -16,6 +18,7 @@ except ImportError as err:
     raise ImproperlyConfigured('Error loading pika module: {}'.format(err))
 else:
     from pika import PlainCredentials, ConnectionParameters, SelectConnection
+    warnings.warn('This module is deprecated. Use `messages_sources.http` instead')
 
 
 pika.adapters.select_connection.SELECT_TYPE = 'epoll'
