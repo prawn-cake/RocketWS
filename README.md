@@ -7,6 +7,44 @@
 RocketWS is open-sourced WebSockets push server based on gevent-websocket library
 
 
+Usage
+------
+
+### JavaScript side (to connect clients)
+    
+    // Create WebSocket JS instance and add onmessage handler
+    var ws = new WebSocket('ws://localhost:58000');  // for secure connections use wss://
+    ws.onmessage = function (event) {
+      console.log('Received data: ' + event.data);
+    }; 
+    
+    // add other handlers: onconnect, onerror, etc
+    
+    // subscribe to a channel chat
+    request = {id: 0, jsonrpc: '2.0', method: 'subscribe', params: {channel: 'chat'}}
+    ws.send(JSON.stringify(request));
+    
+    // send data to a channel chat
+    request = {id: 0, jsonrpc: '2.0', method: 'send_data', params: {channel: 'chat', data: {x: 1, y: 2}}}
+    ws.send(JSON.stringify(request));
+    
+    // unsubscribe
+    request = {id: 0, jsonrpc: '2.0', method: 'unsubscribe', params: {channel: 'chat'}}
+    ws.send(JSON.stringify(request));
+
+
+### Python side (to send messages to clients)
+
+    import requests
+    
+    # emit message to a chat
+    data = {"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}
+    resp = requests.post('http://localhost:59999', json=data)
+    
+    print(resp.text)
+    >>> {'jsonrpc': '2.0', 'result': 'emitted: 0', 'id': 0}
+    
+    
 Features
 ---------
 
