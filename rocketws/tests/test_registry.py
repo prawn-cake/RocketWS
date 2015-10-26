@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from rocketws.registry import ChannelRegistry, SocketRegistry
-from rocketws.tests import get_ws_client
+from rocketws.tests.test_base import get_ws_client
 
 
 class ChannelRegistryTestCase(unittest.TestCase):

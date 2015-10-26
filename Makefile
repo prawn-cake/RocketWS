@@ -2,10 +2,11 @@
 ENV_DIR=$(CURDIR)/.env
 PYTHON=$(ENV_DIR)/bin/python
 COVERAGE=$(ENV_DIR)/bin/coverage
-
-PROJECT=rocketws
+NOSE=$(ENV_DIR)/bin/nosetests
+PROJECT_NAME=rocketws
 DOCKER_IMAGE=prawncake/rocketws
-SETTINGS=rocketws.settings.default
+CODE_DIR=$(CURDIR)/$(PROJECT_NAME)
+
 
 help:
 # target: help - Display callable targets
@@ -14,7 +15,12 @@ help:
 .PHONY: run
 run: env
 # target: run - run server in console mode
-	@$(PYTHON) $(CURDIR)/manage.py runserver --settings=$(SETTINGS)
+	@$(PYTHON) $(CURDIR)/manage.py runserver --ws-conn 0.0.0.0:58000 --transport 0.0.0.0:59999
+
+.PHONY: requirements-test.txt
+requirements-test.txt: env
+# target: requirements-test.txt - install test requirements
+	@$(ENV_DIR)/bin/pip install -r $(CURDIR)/requirements-test.txt
 
 .PHONY: run_bg
 run_bg:
@@ -33,14 +39,9 @@ env:
 	@$(ENV_DIR)/bin/pip install -r $(CURDIR)/requirements.txt
 
 .PHONY: test
-test: env
+test: requirements-test.txt
 # target: test - Run tests
-	@$(PYTHON) manage.py tests
-
-.PHONY: test_coverage
-test_coverage: env
-# target: test_coverage - Run tests with coverage
-	@$(COVERAGE) run --source=rocketws manage.py tests
+	@$(NOSE) --with-coverage $(CODE_DIR)/tests
 
 .PHONY: pull_image
 pull_image:

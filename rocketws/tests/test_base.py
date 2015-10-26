@@ -5,7 +5,7 @@ from random import randint
 from rocketws.exceptions import ImproperlyConfigured
 from geventwebsocket.handler import Client
 import mock
-from rocketws.messages_sources.base import BaseMessagesSource
+from rocketws.transport.base import BaseTransport
 
 
 def get_ws_client(address='127.0.0.1', port=None):
@@ -18,13 +18,13 @@ def get_ws_client(address='127.0.0.1', port=None):
 
 class ModelsTestCase(unittest.TestCase):
     def test_base_message_source(self):
-        class ConcreteMessagesSource(BaseMessagesSource):
+        class ConcreteMessagesSource(BaseTransport):
             pass
 
         # Can't instantiate abstract class with abstract methods start, stop
         self.assertRaises(TypeError, ConcreteMessagesSource)
 
-        class ConcreteMessagesSource2(BaseMessagesSource):
+        class ConcreteMessagesSource2(BaseTransport):
             def start(self):
                 pass
 
@@ -38,13 +38,13 @@ class ModelsTestCase(unittest.TestCase):
 
 class CommonMethodsTestCase(unittest.TestCase):
     def test_get_configured_messages_source(self):
-        from rocketws.server import get_configured_messages_source
+        from rocketws.server import get_configured_transport
 
-        http_source = get_configured_messages_source(name='http')
-        self.assertIsInstance(http_source, BaseMessagesSource)
+        http_source = get_configured_transport(name='http')
+        self.assertIsInstance(http_source, BaseTransport)
 
         self.assertRaises(
             ImproperlyConfigured,
-            get_configured_messages_source,
+            get_configured_transport,
             name='unknown'
         )

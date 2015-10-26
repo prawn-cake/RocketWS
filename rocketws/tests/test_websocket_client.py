@@ -94,7 +94,7 @@ if __name__ == "__main__":
     jobs = []
     channels = []
     for i in range(num_of_clients):
-        client = Client('Client_{}'.format(i+1), conn_string)
+        client = Client('Client_{}'.format(i + 1), conn_string)
         client.start()
         jobs.append(client)
         channels.append('client:{}'.format(client.name))

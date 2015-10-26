@@ -14,15 +14,14 @@ import importlib
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 from rocketws.exceptions import ImproperlyConfigured
 from jsonrpc import JSONRPCResponseManager
-from rocketws.conf import get_settings
-settings = get_settings()
+import rocketws.settings as settings
 
 import logging
 import logging.config
 logging.config.dictConfig(settings.LOGGING)
 
 from rocketws.rpc import (
-    registry, socket_registry, ui_dispatcher, ms_dispatcher
+    registry, socket_registry, ui_dispatcher, transport_dispatcher
 )
 
 
@@ -84,7 +83,8 @@ class MainApplication(WebSocketApplication):
         return self.ws.handler.active_client
 
 
-# TODO: think about implementation of multiple resources and auto-configuring it
+# TODO: think about implementation of multiple resources and auto-configuring
+# it
 # --> implement own registry and socket registry for each WebSocketsApplication
 
 # TODO: implement so-called garbage collector for dead subscribers to remove
@@ -95,16 +95,16 @@ resources = Resource({
 })
 
 
-def get_configured_messages_source(name=None, host=None, port=None):
-    """Dynamic import for messages source
+def get_configured_transport(name=None, host=None, port=None):
+    """Dynamic import for transport
 
     :return: BaseMessagesSource implementation instance
     :raise ImproperlyConfigured:
     """
     try:
         pkg = importlib.import_module(
-            'rocketws.messages_sources.{}'.format(
-                name or settings.MESSAGES_SOURCE['ADAPTER']))
+            'rocketws.transport.{}'.format(
+                name or settings.TRANSPORT['ADAPTER']))
     except ImportError as err:
         raise ImproperlyConfigured(err)
 
@@ -113,24 +113,26 @@ def get_configured_messages_source(name=None, host=None, port=None):
     except KeyError:
         raise ImproperlyConfigured(
             'Source is not found for adapter: {}'.format(
-                settings.MESSAGES_SOURCE['ADAPTER']))
+                settings.TRANSPORT['ADAPTER']))
 
     def on_message_callback(raw_message):
-        response = JSONRPCResponseManager.handle(raw_message, ms_dispatcher)
+        response = JSONRPCResponseManager.handle(raw_message,
+                                                 transport_dispatcher)
         return response.data
 
     if host:
-        settings.MESSAGES_SOURCE.update(HOST=host)
+        settings.TRANSPORT.update(HOST=host)
     if port:
-        settings.MESSAGES_SOURCE.update(PORT=port)
+        settings.TRANSPORT.update(PORT=port)
 
-    source = source_cls(on_message_callback, **settings.MESSAGES_SOURCE)
-    logger.debug('Configure messages source `{}`'.format(
-        name or settings.MESSAGES_SOURCE['ADAPTER']))
+    source = source_cls(on_message_callback, **settings.TRANSPORT)
+    logger.debug('Configure transport `{}`'.format(
+        name or settings.TRANSPORT['ADAPTER']))
     return source
 
 
-def run_server(ws_host=None, ws_port=None, ms_host=None, ms_port=None):
+def run_server(ws_host=None, ws_port=None, transport_host=None,
+               transport_port=None):
     """Application run method
 
     """
@@ -142,8 +144,8 @@ def run_server(ws_host=None, ws_port=None, ms_host=None, ms_port=None):
         debug=settings.WEBSOCKETS['DEBUG']
     )
     server.environ['SERVER_SOFTWARE'] = ''
-    messages_source = get_configured_messages_source(
-        host=ms_host, port=ms_port)
+    messages_source = get_configured_transport(
+        host=transport_host, port=transport_port)
     try:
         messages_source.start()
         logger.info('Starting WebSocketServer on: {}'.format(server.address))

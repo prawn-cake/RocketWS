@@ -18,11 +18,7 @@ if __name__ == '__main__':
         type=str,
         choices=['runserver', 'tests', 'shell']
     )
-    parser.add_argument(
-        '--settings',
-        help='Set settings, for example: rocketws.settings.test',
-        type=str
-    )
+
     # parser.add_argument('--log', help='Set log path', type=str)
 
     parser.add_argument(
@@ -31,24 +27,20 @@ if __name__ == '__main__':
         type=str
     )
     parser.add_argument(
-        '--ms-conn',
+        '--transport',
         help='Set MessagesSource server host and port in format 0.0.0.0:59000',
         type=str
     )
 
     args = parser.parse_args()
 
-    from rocketws.conf import configure_settings
-
-    settings_path = args.settings or 'rocketws.settings.default'
-    print('\n--> Configuring settings: {}\n'.format(settings_path))
-    configure_settings(settings_path)
+    from rocketws import settings
 
     if args.method == 'runserver':
         from rocketws.server import run_server
 
         ws_host, ws_port = None, None
-        ms_host, ms_port = None, None
+        transport_host, transport_port = None, None
 
         if args.ws_conn:
             ws_host, ws_port = args.ws_conn.split(':')
@@ -58,17 +50,25 @@ if __name__ == '__main__':
                 print('\nERROR: Wrong WebSockets server port value: '
                       '{}'.format(ws_port))
                 sys.exit(99)
-        if args.ms_conn:
-            ms_host, ms_port = args.ms_conn.split(':')
+            else:
+                settings.WEBSOCKETS['HOST'] = ws_host
+                settings.WEBSOCKETS['PORT'] = ws_port
+        if args.transport:
+            transport_host, transport_port = args.transport.split(':')
             try:
-                ms_port = int(ms_port)
+                transport_port = int(transport_port)
             except ValueError:
-                print('\nERROR: Wrong MessagesSource port value: '
-                      '{}'.format(ms_port))
+                print('\nERROR: Wrong transport port value: '
+                      '{}'.format(transport_port))
                 sys.exit(99)
+            else:
+                settings.TRANSPORT['HOST'] = transport_host
+                settings.TRANSPORT['PORT'] = transport_port
 
-        run_server(
-            ws_host=ws_host, ws_port=ws_port, ms_host=ms_host, ms_port=ms_port)
+        run_server(ws_host=ws_host,
+                   ws_port=ws_port,
+                   transport_host=transport_host,
+                   transport_port=transport_port)
     elif args.method == 'tests':
         import unittest
         unittest.main(module='rocketws.tests', argv=sys.argv[:1], verbosity=2)
@@ -76,9 +76,9 @@ if __name__ == '__main__':
         from rocketws.shell import RocketWSShell
 
         conn_url = None
-        if args.ms_conn:
-            url = urlparse.urlparse(args.ms_conn)
-            ms_host, ms_port = '', ''
+        if args.transport:
+            url = urlparse.urlparse(args.transport)
+            transport_host, transport_port = '', ''
             if url.scheme:
                 conn_url = url.geturl()
             else:
