@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    from rocketws import default as settings
+    from rocketws import settings
 
     if args.method == 'runserver':
         from rocketws.server import run_server
