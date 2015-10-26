@@ -51,7 +51,6 @@ Features
 * Free easy-use asynchronous standalone WebSockets server, allows to build cutting edge web-applications;
 * All interactions are based on [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification); 
 * Unlimited subscribe channels;
-* Can support multiple message sources, default is HTTP;
 * Scalable software design;
 * Supports command-line interface;
 * Flexible deployment schemas (direct, with supervisor, with docker);
@@ -61,14 +60,6 @@ Workflow
 ---------
 ![RocketWSWorkflow](https://www.dropbox.com/s/nz4krowb760tpho/rocketws_workflow.png?dl=1)
 
-
-Interactions
-------------
-Several main types of server interactions are supported:
-
-* WebSockets - is used by browser-like clients;
-* MessagesSources - is used by backend applications;
-* Command line interface - useful for testing;
 
 Request examples
 ----------------
@@ -85,7 +76,7 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
   `{"id": 0, "jsonrpc": "2.0", "method": "send_data", "params": {"channel": "chat", "data": {"message": "hola!"}}}`
     
 
-* MessagesSources
+* Transport messages (send from backend)
   * **Emit** message for all subscribers for channel `chat`: `{"id": 0, "jsonrpc": "2.0", "method": "emit", "params": {"channel": "chat", "data": {"message": "hola!"}}}`
   * **Notify all** subscribers (some system messages): `{"id": 0, "jsonrpc": "2.0", "method": "notify_all", "params": {"data": {"message": "Broadcase system message"}}}`
 
@@ -99,9 +90,9 @@ So you will be able to emulate backend client to send messages to websockets cli
 * Run shell: `make shell`
 * Type `help` for more information
 
-**NOTE:** For remote shell you need to ensure that port for `MESSAGES_SOURCE` is available on a server.
+**NOTE:** For remote shell you need to ensure that port for `TRANSPORT` is available on a server.
 
-Run remote shell: `python manage.py shell --ms-conn http://rocketws.domain.com:80/shell`
+Run remote shell: `python manage.py shell --transport http://rocketws.domain.com:80/shell`
 
 
 Configuration
@@ -112,7 +103,7 @@ Otherwise you can configure it with `manage.py` command. See more information in
 
 There are several parameters:
 
-* `MESSAGES_SOURCE` -- control MessagesSource parameters for backend interaction. Default port: *59999* 
+* `TRANSPORT` -- backend transport parameters. Default port: *59999* 
 
 * `WEBSOCKETS` -- control WebSockets server parameters for clients interaction. Default port: *58000*
 
@@ -132,7 +123,7 @@ Commands:
 Options:
 
 * `--ws-conn`  - WebSockets server connection options. Example: `--ws-conn 0.0.0.0:58000` or `--ws-conn :58000`. Options for `runserver` command. 
-* `--ms-conn`  - MessagesSource connection options. Example: `--ms-conn 0.0.0.0:59999`. Options for `runserver` and `shell` command.
+* `--transport`  - MessagesSource connection options. Example: `--transport 0.0.0.0:59999`. Options for `runserver` and `shell` command.
 
 
 
@@ -158,7 +149,7 @@ Make sure that you have `libevent-2.0-5` or `libev4` in your system.
 ```
 
     [program:rocketws]
-    command={dir}/.env/bin/python {dir}/manage.py runserver --ws-conn 0.0.0.0:58000 --ms-conn 0.0.0.0:59999
+    command={dir}/.env/bin/python {dir}/manage.py runserver --ws-conn 0.0.0.0:58000 --transport 0.0.0.0:59999
     autostart=false
     autorestart=true
     user={str:user}
@@ -185,7 +176,7 @@ Make sure that you have `libevent-2.0-5` or `libev4` in your system.
 
 *NOTE:* For some reasons docket can't run `nohup`, `disown`, `&` shell instructions from command line or within Makefile commands
 
-Container will be started and then you can connect to `tcp:58000` for WebSockets and to `tcp:59999` for MessagesSource
+Container will be started and then you can connect to `tcp:58000` for WebSockets and to `tcp:59999` for backend transport
 
 #### Brief docker howto
 

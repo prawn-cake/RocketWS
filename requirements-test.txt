@@ -1,17 +1,7 @@
-gevent-websocket==0.9.3
-# simple-models==0.2.0
-json-rpc==1.8.1
-requests==2.5.1
+-r requirements.txt
 
-# Message sources (HTTP is recommended)
-# pika==0.9.14
-flask==0.10.1
-
-# gevent-websocket accelerators, recommended to increase performance
-wsaccel==0.6.2
-ujson==1.33
-
-# For tests
-websocket-client==0.23.0
-mock==1.0.1
-coverage==3.7.1
+websocket-client    == 0.32.0
+mock                == 1.3.0
+coverage            == 4.0
+nose                == 1.3.7
+pylama              == 7.0.6

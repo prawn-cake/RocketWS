@@ -4,8 +4,8 @@ import unittest
 from jsonrpc import JSONRPCResponseManager
 from jsonrpc.jsonrpc2 import JSONRPC20Request
 from rocketws.registry import SocketRegistry
-from rocketws.rpc import registry, ms_dispatcher, ui_dispatcher
-from rocketws.tests import get_ws_client
+from rocketws.rpc import registry, transport_dispatcher, ui_dispatcher
+from rocketws.tests.test_base import get_ws_client
 
 
 class JSONRPCWebSocketsApiTestCase(unittest.TestCase):
@@ -57,7 +57,7 @@ class JSONRPCWebSocketsApiTestCase(unittest.TestCase):
             'emit',
             {'data': {'message': 'test'}, 'channel': 'chat'}
         )
-        response = JSONRPCResponseManager.handle(request.json, ms_dispatcher)
+        response = JSONRPCResponseManager.handle(request.json, transport_dispatcher)
         self.assertIn('emitted', response.data['result'])
 
         for client in client_1, client_2, client_3:

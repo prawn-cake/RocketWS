@@ -3,8 +3,8 @@ import unittest
 
 from rocketws.server import MainApplication, run_server
 from mock import MagicMock, patch
-from rocketws.tests import get_ws_client
 from rocketws.registry import SocketRegistry
+from rocketws.tests.test_base import get_ws_client
 
 
 class MainApplicationTest(unittest.TestCase):
@@ -31,9 +31,9 @@ class MainApplicationTest(unittest.TestCase):
         # TODO: to implement
         pass
 
-    @patch('rocketws.messages_sources.http.HTTPMessagesSource.start')
+    @patch('rocketws.transport.http.HTTPTransport.start')
     @patch('gevent.pywsgi.WSGIServer.serve_forever')
-    def test_run_server(self, mock_serve, mock_ms_start):
+    def test_run_server(self, mock_serve, mock_transport_start):
         run_server()
         self.assertTrue(mock_serve.called)
-        self.assertTrue(mock_ms_start.called)
+        self.assertTrue(mock_transport_start.called)

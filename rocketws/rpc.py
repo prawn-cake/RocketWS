@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """ All json rpc methods is defined here.
-There are two type of methods to dispatch:
-    * ui_dispatch rpc methods are defined for WebSockets messages from UI
-    * ms_dispatch rpc methods are defined for messages sources handlers
+Two dispatcher:
+    * For ui calls (JS frontend calls)
+    * For transport calls (backend calls)
 """
 
 import logging
@@ -15,7 +15,7 @@ logger = logging.getLogger('jsonrpc:ui')
 
 registry = ChannelRegistry()
 socket_registry = SocketRegistry()
-ms_dispatcher = Dispatcher()  # messages_source dispatcher
+transport_dispatcher = Dispatcher()  # messages_source dispatcher
 
 
 @ui_dispatcher.add_method
@@ -73,17 +73,17 @@ def heartbeat(address):
     """
     len_clients = len(socket_registry.clients)
     len_channels = len(registry.channels)
-    logger_ms.info('heartbeat from `{}`:ok (clients={}; channels='
+    logger_transport.info('heartbeat from `{}`:ok (clients={}; channels='
                    '{}))'.format(address, len_clients, len_channels))
     return {'heartbeat': 'ok'}
 
 
 # MessagesSources
 
-logger_ms = logging.getLogger('jsonrpc:ms')
+logger_transport = logging.getLogger('jsonrpc:ms')
 
 
-@ms_dispatcher.add_method
+@transport_dispatcher.add_method
 def emit(channel, data):
     """RPC method for MessagesSources dispatcher (it means is used only by
     backend applications). Emit `data` for all subscribers in `channel`
@@ -92,20 +92,20 @@ def emit(channel, data):
     :param data: dict-like data
     :return:
     """
-    logger_ms.info('invoke `emit` command, args: {}'.format((channel, data)))
+    logger_transport.info('invoke `emit` command, args: {}'.format((channel, data)))
     return registry.emit(channel, data)
 
 
-@ms_dispatcher.add_method
+@transport_dispatcher.add_method
 @log_methods_time(logger=logger)
 def notify_all(data):
-    logger_ms.info('invoke `notify_all` command, args: {}'.format(data))
+    logger_transport.info('invoke `notify_all` command, args: {}'.format(data))
     return registry.notify_all(data)
 
 
-@ms_dispatcher.add_method
+@transport_dispatcher.add_method
 def total_subscribers(channel=None):
-    logger_ms.info(
+    logger_transport.info(
         'invoke `total_subscribers` command, args: {}'.format(channel))
 
     if channel is None:
@@ -115,23 +115,23 @@ def total_subscribers(channel=None):
     return [c.address for c in clients]
 
 
-@ms_dispatcher.add_method
+@transport_dispatcher.add_method
 def available_channels():
-    logger_ms.info('invoke `available_channels` command')
+    logger_transport.info('invoke `available_channels` command')
     return registry.channels
 
 
-@ms_dispatcher.add_method
+@transport_dispatcher.add_method
 def flush_dead_clients():
-    logger_ms.info('invoke `flush_dead_clients` command')
+    logger_transport.info('invoke `flush_dead_clients` command')
     return registry.flush_dead_clients()
 
 
-@ms_dispatcher.add_method
-def heartbeat():
+@transport_dispatcher.add_method
+def ping():
     """MessagesSource heartbeat
 
     :return:
     """
-    logger_ms.info('heartbeat:ok')
-    return {'heartbeat': 'ok'}
+    logger_transport.info('ping:ok')
+    return {'ping': 'ok'}

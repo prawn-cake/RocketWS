@@ -10,22 +10,25 @@ sys.path.append(op.abspath(op.dirname(__file__)) + '/../')
 
 import cmd
 import logging
-from rocketws.settings import default as settings
+import rocketws.settings as settings
 
 import requests
 import ujson as json
 import re
 
-url_regex = re.compile(
+
+URL_RE = re.compile(
     r'^(?:http|ftp|ws)s?://'  # http:// or https://
-    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-    r'localhost|'  #localhost...
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|'
+    r'[A-Z0-9-]{2,}\.?)|'  # domain...
+
+    r'localhost|'  # localhost...
     r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
     r'(?::\d+)?'  # optional port
     r'(?:/?|[/?]\S+)$', re.IGNORECASE
 )
 logger = logging.getLogger('shell')
-CONNECT_URL = 'http://{HOST}:{PORT}/'.format(**settings.MESSAGES_SOURCE)
+CONNECT_URL = 'http://{HOST}:{PORT}/'.format(**settings.TRANSPORT)
 
 
 class RocketWSShell(cmd.Cmd):
@@ -90,7 +93,7 @@ class RocketWSShell(cmd.Cmd):
 
         """
         global CONNECT_URL
-        if re.match(url_regex, line):
+        if re.match(URL_RE, line):
             CONNECT_URL = line
             do_heartbeat()
         else:

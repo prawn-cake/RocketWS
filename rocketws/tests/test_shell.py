@@ -16,6 +16,6 @@ class TestShell(unittest.TestCase):
         shell.cmdloop()
         self.assertTrue(mock_cmdloop.called)
         self.assertTrue(mock_post.called)
-        mock_post.assert_called_once(
+        mock_post.assert_called_once_with(
             'http://0.0.0.0:59999/',
             json={'jsonrpc': '2.0', 'id': 0, 'method': 'heartbeat'})

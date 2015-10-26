@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from rocketws.exceptions import ImproperlyConfigured
-from rocketws.messages_sources.base import BaseMessagesSource
+from rocketws.transport.base import BaseTransport
 
 try:
     import flask
@@ -15,9 +15,9 @@ import logging
 logger = logging.getLogger('ms:http')
 
 
-class HTTPMessagesSource(BaseMessagesSource):
+class HTTPTransport(BaseTransport):
     def __init__(self, on_message_callback, *args, **conn_params):
-        super(HTTPMessagesSource, self).__init__(on_message_callback, *args,
+        super(HTTPTransport, self).__init__(on_message_callback, *args,
                                                  **conn_params)
         self.app = flask.Flask(self.__class__.__name__)
 
@@ -38,12 +38,12 @@ class HTTPMessagesSource(BaseMessagesSource):
 
     def start(self):
         logger.debug(
-            'Starting HTTP messages source on: {}'.format(self.server.address))
+            'Starting HTTP transport on: {}'.format(self.server.address))
         self.server.start()
         logger.debug('Done')
 
     def stop(self):
-        logger.info('Stopping HTTP messages source')
+        logger.info('Stopping HTTP transport')
         self.server.stop()
         logger.debug('Done')
 
@@ -52,5 +52,5 @@ class HTTPMessagesSource(BaseMessagesSource):
         return self.server.started
 
 
-source = HTTPMessagesSource
+source = HTTPTransport
 __all__ = ['source']

@@ -110,7 +110,7 @@ class ChannelRegistry(object):
 
         # Remove channel from registry if there are no subscribers
         if not active_subscribers:
-            ch_logger.debug('There are no active subscribers for channel `{}`. '
+            ch_logger.debug('There are no active subscribers for channel `{}`.'
                             'Remove it from registry.'.format(channel))
             del self.registry[channel]
         else:
