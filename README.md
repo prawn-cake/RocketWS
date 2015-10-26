@@ -84,7 +84,7 @@ All requests must be correspond to [JSON-RPC 2.0 Specification](http://www.jsonr
 Command line interface (RocketWS shell)
 -----------------------
 
-Command line interface is console for WebSockets clients interaction, this feature emulate MessagesSource connector with console.
+Command line interface is console for WebSockets clients interaction, this feature emulate transport connector with console.
 So you will be able to emulate backend client to send messages to websockets clients
 
 * Run shell: `make shell`
@@ -123,7 +123,7 @@ Commands:
 Options:
 
 * `--ws-conn`  - WebSockets server connection options. Example: `--ws-conn 0.0.0.0:58000` or `--ws-conn :58000`. Options for `runserver` command. 
-* `--transport`  - MessagesSource connection options. Example: `--transport 0.0.0.0:59999`. Options for `runserver` and `shell` command.
+* `--transport`  - Backend transport connection options. Example: `--transport 0.0.0.0:59999`. Options for `runserver` and `shell` command.
 
 
 

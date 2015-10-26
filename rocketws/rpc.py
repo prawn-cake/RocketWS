@@ -78,14 +78,12 @@ def heartbeat(address):
     return {'heartbeat': 'ok'}
 
 
-# MessagesSources
-
 logger_transport = logging.getLogger('jsonrpc:ms')
 
 
 @transport_dispatcher.add_method
 def emit(channel, data):
-    """RPC method for MessagesSources dispatcher (it means is used only by
+    """RPC method for transport dispatcher (it means is used only by
     backend applications). Emit `data` for all subscribers in `channel`
 
     :param channel: string name
