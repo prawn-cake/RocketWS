@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='rocketws',
-    version='0.1.3',
+    version='0.2.0',
     packages=['rocketws'],
     url='https://github.com/prawn-cake/RocketWS',
     license='MIT',
