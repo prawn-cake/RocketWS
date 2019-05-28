@@ -1,7 +1,7 @@
 gevent-websocket==0.9.5
 gevent==1.0.2
 json-rpc==1.10.2
-requests==2.8.1
+requests>=2.20.0
 
 # HTTP transport
 flask==0.10.1
