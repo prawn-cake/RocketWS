@@ -8,4 +8,4 @@ flask>=0.12.3
 
 # gevent-websocket accelerators, recommended to increase performance
 wsaccel==0.6.2
-ujson==1.33
+ujson==5.4.0
