@@ -1,5 +1,5 @@
 gevent-websocket==0.9.5
-gevent==1.0.2
+gevent==23.9.1
 json-rpc==1.10.2
 requests>=2.20.0
 
